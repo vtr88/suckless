@@ -1,7 +1,7 @@
 suckless do soth
 ================
 
-Este repositorio agrupa minhas versoes dos programas suckless que uso ou quero
+Este repositorio guarda minhas versoes dos programas suckless que uso ou quero
 migrar para o dia a dia.
 
 Ferramentas
@@ -14,39 +14,13 @@ Ferramentas
 
 Estrutura
 ---------
-Cada ferramenta e um submodulo git separado. Isso mantem o historico upstream
-do suckless em cada projeto e permite puxar atualizacoes quando fizer sentido.
+Cada ferramenta fica em uma subpasta normal deste repositorio. Nao uso
+submodulos aqui; isso deixa o GitHub mostrar todos os arquivos diretamente e
+facilita clonar tudo em outra maquina com um unico repo.
 
 Clonar em outra maquina
 -----------------------
-Depois de criar o repo no GitHub e clonar:
-
-    git clone --recurse-submodules <url-do-repo> suckless
-
-Se ja clonou sem submodulos:
-
-    git submodule update --init --recursive
-
-Atualizar os submodulos para os commits fixados pelo repo pai
--------------------------------------------------------------
-Quando o repo pai mudar o commit de algum submodulo:
-
-    git pull
-    git submodule update --init --recursive
-
-Puxar upstream do suckless em uma ferramenta
--------------------------------------------
-Entre no submodulo desejado:
-
-    cd dmenu
-    git pull origin master
-
-Depois teste, resolva conflitos se aparecerem, compile e commit dentro do
-submodulo. Em seguida volte para o repo pai e grave o novo ponteiro:
-
-    cd ..
-    git add dmenu
-    git commit -m "Update dmenu submodule"
+    git clone git@github.com:vtr88/suckless.git
 
 Compilar
 --------
@@ -61,3 +35,20 @@ Para instalar globalmente:
 
 No meu setup atual, `dmenu` esta sendo usado localmente via
 `~/.local/bin/smenu`, sem depender de instalacao global.
+
+Atualizar a partir do upstream suckless
+---------------------------------------
+Como este repo nao usa submodulos, updates do upstream devem ser feitos com
+cuidado. O fluxo mais simples e adicionar o upstream como remote temporario
+dentro do repo pai e buscar a branch desejada:
+
+    git remote add suckless-dmenu https://git.suckless.org/dmenu
+    git fetch suckless-dmenu
+
+Depois compare ou traga commits manualmente para a subpasta correspondente.
+Quando a customizacao estiver maior, tambem da para manter branches separadas
+por ferramenta ou importar updates com `git subtree`.
+
+Notas
+-----
+Arquivos gerados por build ficam ignorados no `.gitignore` do repo pai.

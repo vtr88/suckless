@@ -1,0 +1,66 @@
+dmenu do soth
+==============
+
+Esta e a minha versao do dmenu, baseada no dmenu original do suckless.
+Ela e usada como substituta do rofi no meu fluxo com Openbox hoje, e depois
+deve continuar sendo usada junto com dwm.
+
+Mudancas principais
+-------------------
+- Fonte padrao em Roboto 9.
+- Tema inspirado em gruvbox.
+- Busca case-insensitive pelo wrapper `~/.local/bin/smenu`.
+- Menu vertical com 10 linhas.
+- Menu centralizado em vez de barra no topo da tela.
+- Largura fixa de 720 pixels.
+- Linhas com 28 pixels de altura.
+- Borda de 2 pixels usando a cor de selecao.
+
+Como compilar
+-------------
+Entre neste diretorio e rode:
+
+    make
+
+Isso gera os binarios locais:
+
+    ./dmenu
+    ./stest
+
+Para instalar no sistema, use o alvo padrao do suckless:
+
+    sudo make clean install
+
+No meu setup atual eu prefiro nao depender da instalacao global. O wrapper
+`~/.local/bin/smenu` coloca este diretorio no inicio do `PATH`, entao
+`dmenu_run` usa `./dmenu` em vez de `/usr/bin/dmenu`.
+
+Como deixar pronto no Openbox
+-----------------------------
+No Openbox, o atalho `Alt+1` deve chamar:
+
+    /home/soth/.local/bin/smenu
+
+Depois de alterar `~/.config/openbox/rc.xml`, recarregue o Openbox:
+
+    openbox --reconfigure
+
+Picom
+-----
+Para manter a transparencia parecida com a que eu usava no rofi, o picom deve
+ter uma regra para a classe `dmenu`:
+
+    opacity-rule = [
+      "85:class_g = 'Rofi'",
+      "85:class_g = 'dmenu'"
+    ];
+
+Depois de mexer no picom:
+
+    pkill -x picom
+    picom -b --config ~/.config/picom/picom.conf
+
+Notas
+-----
+O arquivo `config.h` e o que o build usa de fato. O arquivo `config.def.h`
+tambem foi mantido com as mesmas escolhas para facilitar rebuilds limpos.

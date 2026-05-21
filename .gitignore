@@ -1,0 +1,9 @@
+*.o
+*.tar.gz
+dmenu/dmenu
+dmenu/stest
+dwm/dwm
+slock/slock
+slstatus/slstatus
+st/st
+st/stest
