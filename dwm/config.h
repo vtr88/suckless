@@ -15,27 +15,27 @@ static const char col_green[]       = "#b8bb26";
 static const char *colors[][3]      = {
 	/*               fg         bg         border   */
 	[SchemeNorm] = { col_gray3, col_gray1, col_gray2 },
-	[SchemeSel]  = { col_gray1, col_green, col_green },
+	[SchemeSel]  = { col_gray1, col_green, col_gray1 },
 };
 
 /* tagging */
 static const char *tags[] = { "1", "2", "3", "4", "5", "6" };
 
 static const Rule rules[] = {
-	/* class          instance       title       tags mask     isfloating   monitor */
-	{ "st-256color",  NULL,          NULL,       1 << 0,       0,           -1 },
-	{ "St",           NULL,          NULL,       1 << 0,       0,           -1 },
-	{ "URxvt",        NULL,          NULL,       1 << 0,       0,           -1 },
-	{ "Alacritty",    NULL,          NULL,       1 << 0,       0,           -1 },
-	{ "firefox-esr",  NULL,          NULL,       1 << 1,       0,           -1 },
-	{ "Spotify",      NULL,          NULL,       1 << 2,       1,           -1 },
-	{ "Aseprite",     NULL,          NULL,       1 << 3,       0,           -1 },
-	{ "tiled",        NULL,          NULL,       1 << 3,       1,           -1 },
-	{ "Renoise",      NULL,          NULL,       1 << 4,       0,           -1 },
-	{ "Code",         NULL,          NULL,       1 << 5,       0,           -1 },
-	{ "VSCodium",     NULL,          NULL,       1 << 5,       0,           -1 },
-	{ "mpv",          NULL,          NULL,       0,            1,           -1 },
-	{ "Gimp",         NULL,          NULL,       0,            1,           -1 },
+	/* class          instance       title       tags mask     isfloating   isfullscreen monitor */
+	{ "st-256color",  NULL,          NULL,       1 << 0,       0,           0,           -1 },
+	{ "St",           NULL,          NULL,       1 << 0,       0,           0,           -1 },
+	{ "URxvt",        NULL,          NULL,       1 << 0,       0,           0,           -1 },
+	{ "Alacritty",    NULL,          NULL,       1 << 0,       0,           0,           -1 },
+	{ "firefox-esr",  NULL,          NULL,       1 << 1,       0,           0,           -1 },
+	{ "Spotify",      NULL,          NULL,       1 << 2,       1,           0,           -1 },
+	{ "Aseprite",     NULL,          NULL,       1 << 3,       0,           0,           -1 },
+	{ "tiled",        NULL,          NULL,       1 << 3,       1,           0,           -1 },
+	{ "Renoise",      NULL,          NULL,       1 << 4,       0,           1,           -1 },
+	{ "Code",         NULL,          NULL,       1 << 5,       0,           0,           -1 },
+	{ "VSCodium",     NULL,          NULL,       1 << 5,       0,           0,           -1 },
+	{ "mpv",          NULL,          NULL,       0,            1,           0,           -1 },
+	{ "Gimp",         NULL,          NULL,       0,            1,           0,           -1 },
 };
 
 /* layout(s) */
