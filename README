@@ -1,0 +1,63 @@
+suckless do soth
+================
+
+Este repositorio agrupa minhas versoes dos programas suckless que uso ou quero
+migrar para o dia a dia.
+
+Ferramentas
+-----------
+- `dmenu`: substituto do rofi como launcher.
+- `dwm`: futuro substituto do Openbox.
+- `slstatus`: futuro substituto do tint2/status.
+- `slock`: lock screen.
+- `st`: terminal.
+
+Estrutura
+---------
+Cada ferramenta e um submodulo git separado. Isso mantem o historico upstream
+do suckless em cada projeto e permite puxar atualizacoes quando fizer sentido.
+
+Clonar em outra maquina
+-----------------------
+Depois de criar o repo no GitHub e clonar:
+
+    git clone --recurse-submodules <url-do-repo> suckless
+
+Se ja clonou sem submodulos:
+
+    git submodule update --init --recursive
+
+Atualizar os submodulos para os commits fixados pelo repo pai
+-------------------------------------------------------------
+Quando o repo pai mudar o commit de algum submodulo:
+
+    git pull
+    git submodule update --init --recursive
+
+Puxar upstream do suckless em uma ferramenta
+-------------------------------------------
+Entre no submodulo desejado:
+
+    cd dmenu
+    git pull origin master
+
+Depois teste, resolva conflitos se aparecerem, compile e commit dentro do
+submodulo. Em seguida volte para o repo pai e grave o novo ponteiro:
+
+    cd ..
+    git add dmenu
+    git commit -m "Update dmenu submodule"
+
+Compilar
+--------
+Cada ferramenta segue o fluxo normal do suckless:
+
+    cd dmenu
+    make
+
+Para instalar globalmente:
+
+    sudo make clean install
+
+No meu setup atual, `dmenu` esta sendo usado localmente via
+`~/.local/bin/smenu`, sem depender de instalacao global.
