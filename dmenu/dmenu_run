@@ -1,2 +1,19 @@
 #!/bin/sh
-dmenu_path | dmenu "$@" | ${SHELL:-"/bin/sh"} &
+
+hist=${XDG_CACHE_HOME:-"$HOME/.cache"}/dmenu_run_recent
+cmd=$(
+	{
+		[ -f "$hist" ] && cat "$hist"
+		dmenu_path
+	} | awk '!seen[$0]++' | dmenu "$@"
+)
+
+[ -n "$cmd" ] || exit 0
+
+mkdir -p "${hist%/*}"
+{
+	printf '%s\n' "$cmd"
+	[ -f "$hist" ] && grep -Fvx -- "$cmd" "$hist"
+} | sed 20q > "$hist.tmp" && mv "$hist.tmp" "$hist"
+
+${SHELL:-"/bin/sh"} -c "$cmd" &

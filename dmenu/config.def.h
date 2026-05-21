@@ -15,7 +15,7 @@ static const char *colors[SchemeLast][2] = {
 	[SchemeOut] = { "#282828", "#83a598" },
 };
 /* Menu vertical para ficar mais perto do fluxo que eu tinha no rofi. */
-static unsigned int lines      = 10;
+static unsigned int lines      = 3;
 /* Ajustes visuais locais: menu centralizado, mais alto, com largura fixa e borda. */
 static unsigned int lineheight = 28;
 static unsigned int centered   = 1;
