@@ -1,10 +1,10 @@
 /* See LICENSE file for copyright and license details. */
 
 /* appearance */
-static const unsigned int borderpx  = 0;
+static const unsigned int borderpx  = 1;
 static const unsigned int snap      = 32;
 static const int showbar            = 1;
-static const int topbar             = 1;
+static const int topbar             = 0;
 static const char *fonts[]          = { "Roboto:size=9" };
 static const char dmenufont[]       = "Roboto:size=9";
 static const char col_gray1[]       = "#282828";
@@ -29,7 +29,7 @@ static const Rule rules[] = {
 	{ "Alacritty",    NULL,          NULL,       1 << 0,       0,           -1 },
 	{ "firefox-esr",  NULL,          NULL,       1 << 1,       0,           -1 },
 	{ "Spotify",      NULL,          NULL,       1 << 2,       1,           -1 },
-	{ "Aseprite",     NULL,          NULL,       1 << 3,       1,           -1 },
+	{ "Aseprite",     NULL,          NULL,       1 << 3,       0,           -1 },
 	{ "tiled",        NULL,          NULL,       1 << 3,       1,           -1 },
 	{ "Renoise",      NULL,          NULL,       1 << 4,       0,           -1 },
 	{ "Code",         NULL,          NULL,       1 << 5,       0,           -1 },
