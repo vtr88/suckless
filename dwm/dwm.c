@@ -138,7 +138,6 @@ typedef struct {
 	unsigned int tags;
 	int isfloating;
 	int monitor;
-	int x, y, w, h;
 } Rule;
 
 /* function declarations */
@@ -302,14 +301,6 @@ applyrules(Client *c)
 			for (m = mons; m && m->num != r->monitor; m = m->next);
 			if (m)
 				c->mon = m;
-			if (r->x >= 0)
-				c->x = c->mon->wx + c->mon->ww * r->x / 100;
-			if (r->y >= 0)
-				c->y = c->mon->wy + c->mon->wh * r->y / 100;
-			if (r->w > 0)
-				c->w = c->mon->ww * r->w / 100;
-			if (r->h > 0)
-				c->h = c->mon->wh * r->h / 100;
 		}
 	}
 	if (ch.res_class)
@@ -1851,8 +1842,6 @@ updatebarpos(Monitor *m)
 {
 	m->wy = m->my;
 	m->wh = m->mh;
-	if (externalbarbottompx > 0)
-		m->wh -= externalbarbottompx;
 	if (m->showbar) {
 		m->wh -= bh;
 		m->by = m->topbar ? m->wy : m->wy + m->wh;

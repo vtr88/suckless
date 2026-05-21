@@ -3,9 +3,8 @@
 /* appearance */
 static const unsigned int borderpx  = 0;
 static const unsigned int snap      = 32;
-static const int showbar            = 0;
+static const int showbar            = 1;
 static const int topbar             = 1;
-static const int externalbarbottompx = 25;
 static const char *fonts[]          = { "Roboto:size=9" };
 static const char dmenufont[]       = "Roboto:size=9";
 static const char col_gray1[]       = "#282828";
@@ -23,21 +22,20 @@ static const char *colors[][3]      = {
 static const char *tags[] = { "1", "2", "3", "4", "5", "6" };
 
 static const Rule rules[] = {
-	/* class          instance       title       tags mask     isfloating   monitor  x   y   w    h */
-	{ "tint2",        NULL,          NULL,       ~0,           1,           -1,      -1, -1, -1, -1 },
-	{ "st-256color",  NULL,          NULL,       1 << 0,       1,           -1,       0,  0, 99, 100 },
-	{ "St",           NULL,          NULL,       1 << 0,       1,           -1,       0,  0, 99, 100 },
-	{ "URxvt",        NULL,          NULL,       1 << 0,       1,           -1,       0,  0, 99, 100 },
-	{ "Alacritty",    NULL,          NULL,       1 << 0,       1,           -1,       0,  0, 98,  98 },
-	{ "firefox-esr",  NULL,          NULL,       1 << 1,       1,           -1,       0,  0, 99, 100 },
-	{ "Spotify",      NULL,          NULL,       1 << 2,       1,           -1,      -1, -1, -1, -1 },
-	{ "Aseprite",     NULL,          NULL,       1 << 3,       1,           -1,      -1, -1, -1, -1 },
-	{ "tiled",        NULL,          NULL,       1 << 3,       1,           -1,       0,  0, 99,  99 },
-	{ "Renoise",      NULL,          NULL,       1 << 4,       1,           -1,       0,  0, 99, 100 },
-	{ "Code",         NULL,          NULL,       1 << 5,       1,           -1,      -1, -1, -1, -1 },
-	{ "VSCodium",     NULL,          NULL,       1 << 5,       1,           -1,      -1, -1, -1, -1 },
-	{ "mpv",          NULL,          NULL,       0,            1,           -1,      -1, -1, -1, -1 },
-	{ "Gimp",         NULL,          NULL,       0,            1,           -1,      -1, -1, -1, -1 },
+	/* class          instance       title       tags mask     isfloating   monitor */
+	{ "st-256color",  NULL,          NULL,       1 << 0,       0,           -1 },
+	{ "St",           NULL,          NULL,       1 << 0,       0,           -1 },
+	{ "URxvt",        NULL,          NULL,       1 << 0,       0,           -1 },
+	{ "Alacritty",    NULL,          NULL,       1 << 0,       0,           -1 },
+	{ "firefox-esr",  NULL,          NULL,       1 << 1,       0,           -1 },
+	{ "Spotify",      NULL,          NULL,       1 << 2,       1,           -1 },
+	{ "Aseprite",     NULL,          NULL,       1 << 3,       1,           -1 },
+	{ "tiled",        NULL,          NULL,       1 << 3,       1,           -1 },
+	{ "Renoise",      NULL,          NULL,       1 << 4,       0,           -1 },
+	{ "Code",         NULL,          NULL,       1 << 5,       0,           -1 },
+	{ "VSCodium",     NULL,          NULL,       1 << 5,       0,           -1 },
+	{ "mpv",          NULL,          NULL,       0,            1,           -1 },
+	{ "Gimp",         NULL,          NULL,       0,            1,           -1 },
 };
 
 /* layout(s) */
@@ -49,9 +47,9 @@ static const int refreshrate = 120;
 
 static const Layout layouts[] = {
 	/* symbol     arrange function */
+	{ "[M]",      monocle },
 	{ "><>",      NULL },
 	{ "[]=",      tile },
-	{ "[M]",      monocle },
 };
 
 /* key definitions */
@@ -179,9 +177,9 @@ static const Key keys[] = {
 	{ MODKEY|ControlMask,           XK_l,      setmfact,       {.f = +0.05} },
 	{ MODKEY,                       XK_Return, zoom,           {0} },
 	{ MODKEY|ShiftMask,             XK_c,      killclient,     {0} },
-	{ MODKEY,                       XK_t,      setlayout,      {.v = &layouts[1]} },
-	{ MODKEY,                       XK_f,      setlayout,      {.v = &layouts[0]} },
-	{ MODKEY,                       XK_m,      setlayout,      {.v = &layouts[2]} },
+	{ MODKEY,                       XK_t,      setlayout,      {.v = &layouts[2]} },
+	{ MODKEY,                       XK_f,      setlayout,      {.v = &layouts[1]} },
+	{ MODKEY,                       XK_m,      setlayout,      {.v = &layouts[0]} },
 	{ MODKEY,                       XK_space,  setlayout,      {0} },
 	{ MODKEY|ShiftMask,             XK_space,  togglefloating, {0} },
 	{ MODKEY,                       XK_0,      view,           {.ui = ~0 } },
