@@ -85,6 +85,7 @@ typedef struct Monitor Monitor;
 typedef struct Client Client;
 struct Client {
 	char name[256];
+	char appname[32];
 	float mina, maxa;
 	int x, y, w, h;
 	int oldx, oldy, oldw, oldh;
@@ -143,6 +144,7 @@ typedef struct {
 
 /* function declarations */
 static void applyrules(Client *c);
+static const char *appname(const char *class, const char *instance, const char *title);
 static int applysizehints(Client *c, int *x, int *y, int *w, int *h, int interact);
 static void arrange(Monitor *m);
 static void arrangemon(Monitor *m);
@@ -163,6 +165,7 @@ static void detachstack(Client *c);
 static Monitor *dirtomon(int dir);
 static void drawbar(Monitor *m);
 static void drawbars(void);
+static int drawstatus(int x, int w, const char *stext);
 static void enternotify(XEvent *e);
 static void expose(XEvent *e);
 static void focus(Client *c);
@@ -206,7 +209,9 @@ static void setup(void);
 static void seturgent(Client *c, int urg);
 static void showhide(Client *c);
 static void spawn(const Arg *arg);
+static int statusw(const char *stext);
 static void tag(const Arg *arg);
+static void taglabel(Monitor *m, unsigned int tag, char *buf, size_t size);
 static void tagmon(const Arg *arg);
 static void tile(Monitor *m);
 static void togglebar(const Arg *arg);
@@ -290,6 +295,7 @@ applyrules(Client *c)
 	XGetClassHint(dpy, c->win, &ch);
 	class    = ch.res_class ? ch.res_class : broken;
 	instance = ch.res_name  ? ch.res_name  : broken;
+	strncpy(c->appname, appname(class, instance, c->name), sizeof c->appname - 1);
 
 	for (i = 0; i < LENGTH(rules); i++) {
 		r = &rules[i];
@@ -310,6 +316,30 @@ applyrules(Client *c)
 	if (ch.res_name)
 		XFree(ch.res_name);
 	c->tags = c->tags & TAGMASK ? c->tags & TAGMASK : c->mon->tagset[c->mon->seltags];
+}
+
+const char *
+appname(const char *class, const char *instance, const char *title)
+{
+	if (strstr(class, "st-256color") || strstr(class, "St"))
+		return "st";
+	if (strstr(class, "firefox"))
+		return "firefox";
+	if (strstr(class, "Spotify"))
+		return "spotify";
+	if (strstr(class, "Aseprite"))
+		return "aseprite";
+	if (strstr(class, "Renoise"))
+		return "renoise";
+	if (strstr(class, "Code") || strstr(class, "VSCodium"))
+		return "code";
+	if (strstr(class, "mpv"))
+		return "mpv";
+	if (strstr(class, "Gimp"))
+		return "gimp";
+	if (strstr(instance, "tiled"))
+		return "tiled";
+	return "win";
 }
 
 int
@@ -419,6 +449,7 @@ attachstack(Client *c)
 void
 buttonpress(XEvent *e)
 {
+	char label[256];
 	unsigned int i, x, click;
 	Arg arg = {0};
 	Client *c;
@@ -434,15 +465,16 @@ buttonpress(XEvent *e)
 	}
 	if (ev->window == selmon->barwin) {
 		i = x = 0;
-		do
-			x += TEXTW(tags[i]);
-		while (ev->x >= x && ++i < LENGTH(tags));
+		do {
+			taglabel(selmon, i, label, sizeof label);
+			x += TEXTW(label);
+		} while (ev->x >= x && ++i < LENGTH(tags));
 		if (i < LENGTH(tags)) {
 			click = ClkTagBar;
 			arg.ui = 1 << i;
 		} else if (ev->x < x + TEXTW(selmon->ltsymbol))
 			click = ClkLtSymbol;
-		else if (ev->x > selmon->ww - (int)TEXTW(stext) + lrpad - 2)
+		else if (ev->x > selmon->ww - statusw(stext) - 2)
 			click = ClkStatusText;
 		else
 			click = ClkWinTitle;
@@ -699,6 +731,7 @@ dirtomon(int dir)
 void
 drawbar(Monitor *m)
 {
+	char label[256];
 	int x, w, tw = 0;
 	int boxs = drw->fonts->h / 9;
 	int boxw = drw->fonts->h / 6 + 2;
@@ -711,8 +744,8 @@ drawbar(Monitor *m)
 	/* draw status first so it can be overdrawn by tags later */
 	if (m == selmon) { /* status is only drawn on selected monitor */
 		drw_setscheme(drw, scheme[SchemeNorm]);
-		tw = TEXTW(stext) - lrpad + 2; /* 2px right padding */
-		drw_text(drw, m->ww - tw, 0, tw, bh, 0, stext, 0);
+		tw = statusw(stext) + 2; /* 2px right padding */
+		drawstatus(m->ww - tw, tw, stext);
 	}
 
 	for (c = m->clients; c; c = c->next) {
@@ -722,9 +755,10 @@ drawbar(Monitor *m)
 	}
 	x = 0;
 	for (i = 0; i < LENGTH(tags); i++) {
-		w = TEXTW(tags[i]);
+		taglabel(m, i, label, sizeof label);
+		w = TEXTW(label);
 		drw_setscheme(drw, scheme[m->tagset[m->seltags] & 1 << i ? SchemeSel : SchemeNorm]);
-		drw_text(drw, x, 0, w, bh, lrpad / 2, tags[i], urg & 1 << i);
+		drw_text(drw, x, 0, w, bh, lrpad / 2, label, urg & 1 << i);
 		if (occ & 1 << i)
 			drw_rect(drw, x + boxs, boxs, boxw, boxw,
 				m == selmon && selmon->sel && selmon->sel->tags & 1 << i,
@@ -738,7 +772,7 @@ drawbar(Monitor *m)
 	if ((w = m->ww - tw - x) > bh) {
 		if (m->sel) {
 			drw_setscheme(drw, scheme[SchemeNorm]);
-			drw_text(drw, x, 0, w, bh, lrpad / 2, m->sel->name, 0);
+			drw_rect(drw, x, 0, w, bh, 1, 1);
 			if (m->sel->isfloating)
 				drw_rect(drw, x + boxs, boxs, boxw, boxw, m->sel->isfixed, 0);
 		} else {
@@ -747,6 +781,71 @@ drawbar(Monitor *m)
 		}
 	}
 	drw_map(drw, m->barwin, 0, 0, m->ww, bh);
+}
+
+int
+drawstatus(int x, int w, const char *stext)
+{
+	char buf[256];
+	char col[8];
+	const char *text, *p;
+	int dynbg = 0, dynfg = 0, ret = x, sw;
+	Clr statusscheme[3];
+
+	statusscheme[ColFg] = scheme[SchemeNorm][ColFg];
+	statusscheme[ColBg] = scheme[SchemeNorm][ColBg];
+	statusscheme[ColBorder] = scheme[SchemeNorm][ColBorder];
+	drw_setscheme(drw, statusscheme);
+	drw_rect(drw, x, 0, w, bh, 1, 1);
+
+	for (text = p = stext; *p; p++) {
+		if (*p != '^')
+			continue;
+		if (p > text) {
+			snprintf(buf, MIN((size_t)(p - text + 1), sizeof buf), "%s", text);
+			sw = drw_fontset_getwidth(drw, buf);
+			drw_text(drw, x, 0, sw, bh, 0, buf, 0);
+			x += sw;
+		}
+		if (p[1] == 'c' && p[2] == '#') {
+			if (dynfg)
+				drw_clr_free(drw, &statusscheme[ColFg]);
+			memcpy(col, p + 2, 7);
+			col[7] = '\0';
+			drw_clr_create(drw, &statusscheme[ColFg], col);
+			dynfg = 1;
+			p += 9;
+		} else if (p[1] == 'b' && p[2] == '#') {
+			if (dynbg)
+				drw_clr_free(drw, &statusscheme[ColBg]);
+			memcpy(col, p + 2, 7);
+			col[7] = '\0';
+			drw_clr_create(drw, &statusscheme[ColBg], col);
+			dynbg = 1;
+			p += 9;
+		} else if (p[1] == 'd' && p[2] == '^') {
+			if (dynfg)
+				drw_clr_free(drw, &statusscheme[ColFg]);
+			if (dynbg)
+				drw_clr_free(drw, &statusscheme[ColBg]);
+			statusscheme[ColFg] = scheme[SchemeNorm][ColFg];
+			statusscheme[ColBg] = scheme[SchemeNorm][ColBg];
+			dynfg = dynbg = 0;
+			p += 2;
+		}
+		drw_setscheme(drw, statusscheme);
+		text = p + 1;
+	}
+	if (p > text) {
+		sw = drw_fontset_getwidth(drw, text);
+		drw_text(drw, x, 0, sw, bh, 0, text, 0);
+		x += sw;
+	}
+	if (dynfg)
+		drw_clr_free(drw, &statusscheme[ColFg]);
+	if (dynbg)
+		drw_clr_free(drw, &statusscheme[ColBg]);
+	return ret;
 }
 
 void
@@ -1667,6 +1766,56 @@ spawn(const Arg *arg)
 
 		execvp(((char **)arg->v)[0], (char **)arg->v);
 		die("dwm: execvp '%s' failed:", ((char **)arg->v)[0]);
+	}
+}
+
+int
+statusw(const char *stext)
+{
+	char buf[256];
+	int w = 0;
+	const char *text, *p;
+
+	for (text = p = stext; *p; p++) {
+		if (*p != '^')
+			continue;
+		if (p > text) {
+			snprintf(buf, MIN((size_t)(p - text + 1), sizeof buf), "%s", text);
+			w += drw_fontset_getwidth(drw, buf);
+		}
+		if ((p[1] == 'c' || p[1] == 'b') && p[2] == '#')
+			p += 9;
+		else if (p[1] == 'd' && p[2] == '^')
+			p += 2;
+		text = p + 1;
+	}
+	if (p > text)
+		w += drw_fontset_getwidth(drw, text);
+	return w;
+}
+
+void
+taglabel(Monitor *m, unsigned int tag, char *buf, size_t size)
+{
+	char used[256] = ",";
+	char key[64];
+	const char *name;
+	Client *c;
+	int first = 1;
+
+	snprintf(buf, size, "%s", tags[tag]);
+	for (c = m->clients; c; c = c->next) {
+		if (!(c->tags & (1 << tag)))
+			continue;
+		name = c->appname[0] ? c->appname : "win";
+		snprintf(key, sizeof key, ",%s,", name);
+		if (strstr(used, key))
+			continue;
+		strncat(used, name, sizeof used - strlen(used) - 2);
+		strncat(used, ",", sizeof used - strlen(used) - 1);
+		strncat(buf, first ? ":" : ",", size - strlen(buf) - 1);
+		strncat(buf, name, size - strlen(buf) - 1);
+		first = 0;
 	}
 }
 

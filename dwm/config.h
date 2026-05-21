@@ -5,7 +5,7 @@ static const unsigned int borderpx  = 1;
 static const unsigned int snap      = 32;
 static const int showbar            = 1;
 static const int topbar             = 0;
-static const char *fonts[]          = { "Roboto:size=9" };
+static const char *fonts[]          = { "Noto Sans:style=Bold:size=9", "Noto Color Emoji:size=9" };
 static const char dmenufont[]       = "Roboto:size=9";
 static const char col_gray1[]       = "#282828";
 static const char col_gray2[]       = "#504945";

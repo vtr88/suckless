@@ -66,11 +66,11 @@ static const char unknown_str[] = "n/a";
  */
 static const struct arg args[] = {
 	/* function format          argument */
-	{ run_command, "%s | ", "slstatus-psu" },
-	{ run_command, "%s | ", "slstatus-treino" },
-	{ run_command, "%s | ", "slstatus-result" },
-	{ run_command, "%s | ", "slstatus-weather" },
-	{ run_command, "%s | ", "slstatus-year" },
-	{ battery_perc, "bat %s%% | ", "BAT1" },
-	{ datetime, "%s", "%c" },
+	{ run_command, "^c#fabd2f^%s^d^  ", "/usr/local/bin/slstatus-psu" },
+	{ run_command, "^c#b8bb26^%s^d^  ", "/usr/local/bin/slstatus-treino" },
+	{ run_command, "^c#8ec07c^%s^d^  ", "/usr/local/bin/slstatus-result" },
+	{ run_command, "^c#83a598^☁ %s^d^  ", "/usr/local/bin/slstatus-weather" },
+	{ run_command, "^c#d3869b^◷ %s^d^  ", "/usr/local/bin/slstatus-year" },
+	{ battery_perc, "^c#fe8019^bat %s%%^d^  ", "BAT1" },
+	{ datetime, "^c#ebdbb2^%s^d^", "%c" },
 };
