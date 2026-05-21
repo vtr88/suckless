@@ -5,6 +5,12 @@
 include config.mk
 
 REQ = util
+SCRIPTS =\
+	scripts/slstatus-psu\
+	scripts/slstatus-result\
+	scripts/slstatus-treino\
+	scripts/slstatus-weather\
+	scripts/slstatus-year
 COM =\
 	components/battery\
 	components/cat\
@@ -60,10 +66,17 @@ install: all
 	mkdir -p "$(DESTDIR)$(PREFIX)/bin"
 	cp -f slstatus "$(DESTDIR)$(PREFIX)/bin"
 	chmod 755 "$(DESTDIR)$(PREFIX)/bin/slstatus"
+	cp -f $(SCRIPTS) "$(DESTDIR)$(PREFIX)/bin"
+	for script in $(SCRIPTS); do chmod 755 "$(DESTDIR)$(PREFIX)/bin/$$(basename "$$script")"; done
 	mkdir -p "$(DESTDIR)$(MANPREFIX)/man1"
 	cp -f slstatus.1 "$(DESTDIR)$(MANPREFIX)/man1"
 	chmod 644 "$(DESTDIR)$(MANPREFIX)/man1/slstatus.1"
 
 uninstall:
 	rm -f "$(DESTDIR)$(PREFIX)/bin/slstatus"
+	rm -f "$(DESTDIR)$(PREFIX)/bin/slstatus-psu"
+	rm -f "$(DESTDIR)$(PREFIX)/bin/slstatus-result"
+	rm -f "$(DESTDIR)$(PREFIX)/bin/slstatus-treino"
+	rm -f "$(DESTDIR)$(PREFIX)/bin/slstatus-weather"
+	rm -f "$(DESTDIR)$(PREFIX)/bin/slstatus-year"
 	rm -f "$(DESTDIR)$(MANPREFIX)/man1/slstatus.1"

@@ -1,0 +1,3 @@
+#!/bin/sh
+
+sed 's/<[^>]*>//g' "$HOME/.config/tint2/result.txt" 2>/dev/null

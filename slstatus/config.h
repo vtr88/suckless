@@ -66,7 +66,11 @@ static const char unknown_str[] = "n/a";
  */
 static const struct arg args[] = {
 	/* function format          argument */
-	{ ram_perc,  "mem %s%% | ", NULL },
-	{ cpu_perc,  "cpu %s%% | ", NULL },
-	{ datetime, "%s",           "%Y-%m-%d %H:%M" },
+	{ run_command, "%s | ", "slstatus-psu" },
+	{ run_command, "%s | ", "slstatus-treino" },
+	{ run_command, "%s | ", "slstatus-result" },
+	{ run_command, "%s | ", "slstatus-weather" },
+	{ run_command, "%s | ", "slstatus-year" },
+	{ battery_perc, "bat %s%% | ", "BAT1" },
+	{ datetime, "%s", "%c" },
 };

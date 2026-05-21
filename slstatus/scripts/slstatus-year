@@ -1,0 +1,7 @@
+#!/bin/sh
+
+start=$(date -d "$(date +%Y)-03-11" +%s)
+now=$(date +%s)
+days=$(( (now - start) / 86400 ))
+
+printf '%d%%\n' $(( days * 100 / 365 ))

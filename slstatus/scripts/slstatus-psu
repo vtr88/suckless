@@ -1,0 +1,11 @@
+#!/bin/sh
+
+cache="${XDG_CACHE_HOME:-$HOME/.cache}/slstatus-psu"
+
+out=$(/usr/bin/psuinfo -CgMk -N 2>/dev/null)
+if [ -n "$out" ]; then
+	printf '%s\n' "$out" > "$cache"
+	printf '%s\n' "$out"
+elif [ -s "$cache" ]; then
+	cat "$cache"
+fi

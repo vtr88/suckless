@@ -1,0 +1,23 @@
+#!/bin/sh
+
+cache="${XDG_CACHE_HOME:-$HOME/.cache}/slstatus-weather"
+
+if [ -s "$cache" ]; then
+	if [ "$(cat "$cache")" = "out" ]; then
+		if [ -n "$(find "$cache" -mmin -5 -print 2>/dev/null)" ]; then
+			cat "$cache"
+			exit 0
+		fi
+	elif [ -n "$(find "$cache" -mmin -60 -print 2>/dev/null)" ]; then
+		cat "$cache"
+		exit 0
+	fi
+fi
+
+out=$(curl --max-time 3 -sf "wttr.in/tanabi?format=%l+%c+%t+%m" 2>/dev/null)
+case "$out" in
+	""|*"render failed"*|*"error"*|*"missing"*) out="out" ;;
+esac
+
+printf '%s\n' "$out" > "$cache"
+printf '%s\n' "$out"
