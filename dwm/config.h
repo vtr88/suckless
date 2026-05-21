@@ -74,6 +74,7 @@ static const char *asepritecmd[]  = { "/usr/bin/aseprite", NULL };
 static const char *renoisecmd[]   = { "renoise", NULL };
 static const char *lockcmd[]      = { "/usr/local/bin/slock", "/usr/sbin/pm-suspend", NULL };
 static const char *screenshotcmd[]= { "flameshot", "gui", NULL };
+static const char *gnomeshotcmd[] = { "gnome-screenshot", "-i", NULL };
 static const char *greekcmd[]     = { "/home/soth/.config/greek.sh", NULL };
 
 static unsigned int
@@ -118,6 +119,15 @@ tagrel(const Arg *arg)
 		tag(&(Arg){.ui = 1 << next});
 }
 
+static void
+lowerclient(const Arg *arg)
+{
+	if (!selmon->sel)
+		return;
+	XLowerWindow(dpy, selmon->sel->win);
+	focusstack(&(Arg){.i = +1});
+}
+
 static const Key keys[] = {
 	/* modifier                     key        function        argument */
 	{ ALTKEY,                       XK_1,      spawn,          {.v = dmenucmd } },
@@ -128,6 +138,7 @@ static const Key keys[] = {
 	{ ALTKEY,                       XK_6,      spawn,          {.v = renoisecmd } },
 	{ MODKEY,                       XK_l,      spawn,          {.v = lockcmd } },
 	{ MODKEY|ShiftMask,             XK_s,      spawn,          {.v = screenshotcmd } },
+	{ 0,                            XK_Print,  spawn,          {.v = gnomeshotcmd } },
 	{ MODKEY,                       XK_F8,     spawn,          {.v = greekcmd } },
 
 	{ MODKEY,                       XK_h,      spawn,          SHCMD("xdotool key Left") },
@@ -151,6 +162,7 @@ static const Key keys[] = {
 	{ MODKEY,                       XK_F6,     view,           {.ui = 1 << 5 } },
 
 	{ ALTKEY,                       XK_F4,     killclient,     {0} },
+	{ ALTKEY,                       XK_Escape, lowerclient,    {0} },
 	{ ALTKEY,                       XK_Tab,    focusstack,     {.i = +1 } },
 	{ ALTKEY|ShiftMask,             XK_Tab,    focusstack,     {.i = -1 } },
 	{ MODKEY|ShiftMask,             XK_Right,  focusstack,     {.i = +1 } },
