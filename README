@@ -1,54 +1,31 @@
-suckless do soth
-================
+suckless tools
+==============
 
-Este repositorio guarda minhas versoes dos programas suckless que uso ou quero
-migrar para o dia a dia.
+This repository contains local builds of several suckless tools.
 
-Ferramentas
------------
-- `dmenu`: substituto do rofi como launcher.
-- `dwm`: futuro substituto do Openbox.
-- `slstatus`: futuro substituto do tint2/status.
-- `slock`: lock screen.
-- `st`: terminal.
+Included tools
+--------------
+- `dmenu`: dynamic menu for X.
+- `dwm`: dynamic window manager for X.
+- `slstatus`: status monitor for dwm and other EWMH-compatible window managers.
+- `slock`: simple X display locker.
+- `st`: simple terminal emulator for X.
 
-Estrutura
----------
-Cada ferramenta fica em uma subpasta normal deste repositorio. Nao uso
-submodulos aqui; isso deixa o GitHub mostrar todos os arquivos diretamente e
-facilita clonar tudo em outra maquina com um unico repo.
-
-Clonar em outra maquina
------------------------
-    git clone git@github.com:vtr88/suckless.git
-
-Compilar
---------
-Cada ferramenta segue o fluxo normal do suckless:
+Build
+-----
+Each tool is built from its own directory:
 
     cd dmenu
     make
 
-Para instalar globalmente:
+To install a tool globally, run the usual suckless install target from that
+tool directory:
 
     sudo make clean install
 
-No meu setup atual, `dmenu` esta sendo usado localmente via
-`~/.local/bin/smenu`, sem depender de instalacao global.
+Configuration
+-------------
+Most suckless tools are configured by editing `config.h` or `config.def.h` and
+rebuilding.
 
-Atualizar a partir do upstream suckless
----------------------------------------
-Como este repo nao usa submodulos, updates do upstream devem ser feitos com
-cuidado. O fluxo mais simples e adicionar o upstream como remote temporario
-dentro do repo pai e buscar a branch desejada:
-
-    git remote add suckless-dmenu https://git.suckless.org/dmenu
-    git fetch suckless-dmenu
-
-Depois compare ou traga commits manualmente para a subpasta correspondente.
-Quando a customizacao estiver maior, tambem da para manter branches separadas
-por ferramenta ou importar updates com `git subtree`.
-
-Notas
------
-Arquivos gerados por build ficam ignorados no `.gitignore` do repo pai.
+Generated build outputs are ignored by the repository `.gitignore`.
