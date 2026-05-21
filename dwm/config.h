@@ -5,6 +5,7 @@ static const unsigned int borderpx  = 0;
 static const unsigned int snap      = 32;
 static const int showbar            = 0;
 static const int topbar             = 1;
+static const int externalbarbottompx = 25;
 static const char *fonts[]          = { "Roboto:size=9" };
 static const char dmenufont[]       = "Roboto:size=9";
 static const char col_gray1[]       = "#282828";
@@ -22,20 +23,21 @@ static const char *colors[][3]      = {
 static const char *tags[] = { "1", "2", "3", "4", "5", "6" };
 
 static const Rule rules[] = {
-	/* class          instance       title       tags mask     isfloating   monitor */
-	{ "st-256color",  NULL,          NULL,       1 << 0,       1,           -1 },
-	{ "St",           NULL,          NULL,       1 << 0,       1,           -1 },
-	{ "URxvt",        NULL,          NULL,       1 << 0,       1,           -1 },
-	{ "Alacritty",    NULL,          NULL,       1 << 0,       1,           -1 },
-	{ "firefox-esr",  NULL,          NULL,       1 << 1,       1,           -1 },
-	{ "Spotify",      NULL,          NULL,       1 << 2,       1,           -1 },
-	{ "Aseprite",     NULL,          NULL,       1 << 3,       1,           -1 },
-	{ "tiled",        NULL,          NULL,       1 << 3,       1,           -1 },
-	{ "Renoise",      NULL,          NULL,       1 << 4,       1,           -1 },
-	{ "Code",         NULL,          NULL,       1 << 5,       1,           -1 },
-	{ "VSCodium",     NULL,          NULL,       1 << 5,       1,           -1 },
-	{ "mpv",          NULL,          NULL,       0,            1,           -1 },
-	{ "Gimp",         NULL,          NULL,       0,            1,           -1 },
+	/* class          instance       title       tags mask     isfloating   monitor  x   y   w    h */
+	{ "tint2",        NULL,          NULL,       ~0,           1,           -1,      -1, -1, -1, -1 },
+	{ "st-256color",  NULL,          NULL,       1 << 0,       1,           -1,       0,  0, 99, 100 },
+	{ "St",           NULL,          NULL,       1 << 0,       1,           -1,       0,  0, 99, 100 },
+	{ "URxvt",        NULL,          NULL,       1 << 0,       1,           -1,       0,  0, 99, 100 },
+	{ "Alacritty",    NULL,          NULL,       1 << 0,       1,           -1,       0,  0, 98,  98 },
+	{ "firefox-esr",  NULL,          NULL,       1 << 1,       1,           -1,       0,  0, 99, 100 },
+	{ "Spotify",      NULL,          NULL,       1 << 2,       1,           -1,      -1, -1, -1, -1 },
+	{ "Aseprite",     NULL,          NULL,       1 << 3,       1,           -1,      -1, -1, -1, -1 },
+	{ "tiled",        NULL,          NULL,       1 << 3,       1,           -1,       0,  0, 99,  99 },
+	{ "Renoise",      NULL,          NULL,       1 << 4,       1,           -1,       0,  0, 99, 100 },
+	{ "Code",         NULL,          NULL,       1 << 5,       1,           -1,      -1, -1, -1, -1 },
+	{ "VSCodium",     NULL,          NULL,       1 << 5,       1,           -1,      -1, -1, -1, -1 },
+	{ "mpv",          NULL,          NULL,       0,            1,           -1,      -1, -1, -1, -1 },
+	{ "Gimp",         NULL,          NULL,       0,            1,           -1,      -1, -1, -1, -1 },
 };
 
 /* layout(s) */
