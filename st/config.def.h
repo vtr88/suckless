@@ -6,8 +6,7 @@
  * font: see http://freedesktop.org/software/fontconfig/fontconfig-user.html
  */
 static char *font = "Fira Code Retina:size=11:antialias=true:autohint=true";
-static int borderpx_x = 1;
-static int borderpx_y = 0;
+static int borderpx = 1;
 
 /*
  * What program is execed by st depends of these precedence rules:
