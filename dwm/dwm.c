@@ -521,6 +521,12 @@ buttonpress(XEvent *e)
 		selmon = m;
 		focus(NULL);
 	}
+	if ((c = wintosystrayicon(ev->window))) {
+		sendevent(c->win, xatom[Xembed], StructureNotifyMask, CurrentTime,
+			XEMBED_WINDOW_ACTIVATE, 0, systray->win, XEMBED_EMBEDDED_VERSION);
+		XAllowEvents(dpy, ReplayPointer, CurrentTime);
+		return;
+	}
 	if (ev->window == selmon->barwin) {
 		i = x = 0;
 		do {
@@ -647,6 +653,14 @@ clientmessage(XEvent *e)
 			updatesizehints(c);
 			updatesystrayicongeom(c, wa.width, wa.height);
 			XAddToSaveSet(dpy, c->win);
+			/*
+			 * Alguns applets nao selecionam ButtonPress na propria janela
+			 * depois de serem reparentados. O grab passivo acorda o dwm,
+			 * que ativa o XEmbed e devolve o clique com ReplayPointer.
+			 */
+			XGrabButton(dpy, AnyButton, AnyModifier, c->win, True,
+				ButtonPressMask|ButtonReleaseMask, GrabModeSync, GrabModeAsync,
+				None, None);
 			XSelectInput(dpy, c->win, StructureNotifyMask|PropertyChangeMask|ResizeRedirectMask);
 			XReparentWindow(dpy, c->win, systray->win, 0, 0);
 			swa.background_pixel = scheme[SchemeNorm][ColBg].pixel;
@@ -876,7 +890,7 @@ drawbar(Monitor *m)
 	}
 	x = 0;
 	for (i = 0; i < LENGTH(tags); i++) {
-		/* label contem o numero da tag + apps abertos nela, ex: 2:firefox. */
+		/* label contem o numero da tag + apps abertos nela, ex: 2 firefox. */
 		taglabel(m, i, label, sizeof label);
 		w = TEXTW(label);
 		drw_setscheme(drw, scheme[m->tagset[m->seltags] & 1 << i ? SchemeSel : SchemeNorm]);
@@ -2034,7 +2048,7 @@ taglabel(Monitor *m, unsigned int tag, char *buf, size_t size)
 			continue;
 		strncat(used, name, sizeof used - strlen(used) - 2);
 		strncat(used, ",", sizeof used - strlen(used) - 1);
-		strncat(buf, first ? ":" : ",", size - strlen(buf) - 1);
+		strncat(buf, first ? " " : ",", size - strlen(buf) - 1);
 		strncat(buf, name, size - strlen(buf) - 1);
 		first = 0;
 	}

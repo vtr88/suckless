@@ -82,7 +82,7 @@ static const struct arg args[] = {
 	/* Resultado do bicho, tambem sem pango e com marcador colorido para Brasil. */
 	{ run_command, "^c#8ec07c^%s^d^  ", "/usr/local/bin/slstatus-result" },
 	/* Clima cacheado para nao chamar wttr.in a cada segundo. */
-	{ run_command, "^c#83a598^☁ %s^d^  ", "/usr/local/bin/slstatus-weather" },
+	{ run_command, "^c#83a598^%s^d^  ", "/usr/local/bin/slstatus-weather" },
 	/* Progresso anual contado a partir de 11/03, como no setup antigo. */
 	{ run_command, "^c#d3869b^◷ %s^d^  ", "/usr/local/bin/slstatus-year" },
 	/* Bateria local detectada como BAT1 neste notebook. */
