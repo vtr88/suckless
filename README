@@ -1,31 +1,44 @@
 suckless tools
 ==============
 
-This repository contains local builds of several suckless tools.
+Este repositorio guarda minhas versoes locais de ferramentas suckless.
+Tudo fica em subdiretorios simples, sem submodulos, para facilitar clonar,
+compilar e instalar em outra maquina.
 
-Included tools
---------------
-- `dmenu`: dynamic menu for X.
-- `dwm`: dynamic window manager for X.
-- `slstatus`: status monitor for dwm and other EWMH-compatible window managers.
-- `slock`: simple X display locker.
-- `st`: simple terminal emulator for X.
+Ferramentas
+-----------
+- `dmenu`: menu dinamico para X.
+- `dwm`: window manager dinamico para X.
+- `slstatus`: gerador de status para a barra do dwm.
+- `slock`: bloqueador simples de tela X.
+- `st`: terminal simples para X.
 
-Build
------
-Each tool is built from its own directory:
+Como compilar
+-------------
+Entre no diretorio da ferramenta desejada e rode `make`:
 
-    cd dmenu
+    cd dwm
     make
 
-To install a tool globally, run the usual suckless install target from that
-tool directory:
+Como instalar
+-------------
+As ferramentas usam o alvo padrao dos projetos suckless. Para instalar em
+`/usr/local`, rode dentro do diretorio da ferramenta:
 
     sudo make clean install
 
-Configuration
--------------
-Most suckless tools are configured by editing `config.h` or `config.def.h` and
-rebuilding.
+Configuracao
+------------
+Em geral, as customizacoes ficam em `config.h`. Quando existe `config.def.h`,
+ele acompanha a mesma configuracao para manter a versao base documentada.
 
-Generated build outputs are ignored by the repository `.gitignore`.
+O fluxo normal e:
+
+    editar config.h
+    make
+    sudo make clean install
+
+Depois disso, reinicie o programa afetado. No caso do `dwm`, reinicie a sessao
+X ou saia do dwm e rode `startx` de novo.
+
+Arquivos gerados por build ficam fora do Git via `.gitignore`.

@@ -1,15 +1,24 @@
 /* See LICENSE file for copyright and license details. */
 
-/* appearance */
+/*
+ * Aparencia geral.
+ *
+ * borderpx continua em 1 para manter a separacao visual minima entre janelas.
+ * O foco nao usa borda verde; a borda selecionada foi escurecida no esquema
+ * de cores para preservar o espacamento sem chamar atencao.
+ */
 static const unsigned int borderpx  = 1;
 static const unsigned int snap      = 32;
+/* Systray embutida no dwm: substitui stalonetray/tint2 para icones de bandeja. */
 static const unsigned int systraypinning = 0;
 static const unsigned int systrayonleft = 0;
 static const unsigned int systrayspacing = 2;
 static const int systraypinningfailfirst = 1;
 static const int showsystray        = 1;
+/* Barra embaixo para ficar no mesmo lugar onde o tint2 ficava. */
 static const int showbar            = 1;
 static const int topbar             = 0;
+/* Fonte mais pesada para legibilidade e fallback para emoji/glyphs do status. */
 static const char *fonts[]          = { "Noto Sans:style=Bold:size=9", "Noto Color Emoji:size=9" };
 static const char dmenufont[]       = "Roboto:size=9";
 static const char col_gray1[]       = "#282828";
@@ -20,12 +29,23 @@ static const char col_green[]       = "#b8bb26";
 static const char *colors[][3]      = {
 	/*               fg         bg         border   */
 	[SchemeNorm] = { col_gray3, col_gray1, col_gray2 },
+	/* Verde so no fundo da tag selecionada; borda fica escura. */
 	[SchemeSel]  = { col_gray1, col_green, col_gray1 },
 };
 
-/* tagging */
+/*
+ * Tags fixas usadas como "areas de trabalho".
+ * Os nomes dos apps sao adicionados dinamicamente pelo patch local em dwm.c.
+ */
 static const char *tags[] = { "1", "2", "3", "4", "5", "6" };
 
+/*
+ * Regras de abertura.
+ *
+ * tags mask: tag inicial do app.
+ * isfloating: janela flutuante, quando o app se comporta melhor assim.
+ * isfullscreen: extensao local para abrir em fullscreen automaticamente.
+ */
 static const Rule rules[] = {
 	/* class          instance       title       tags mask     isfloating   isfullscreen monitor */
 	{ "st-256color",  NULL,          NULL,       1 << 0,       0,           0,           -1 },
@@ -43,7 +63,13 @@ static const Rule rules[] = {
 	{ "Gimp",         NULL,          NULL,       0,            1,           0,           -1 },
 };
 
-/* layout(s) */
+/*
+ * Layouts.
+ *
+ * Monocle vem primeiro porque este setup trata cada tag como uma tela cheia
+ * propria. Floating fica disponivel para apps como Spotify e janelas que
+ * precisam escapar do tiling.
+ */
 static const float mfact     = 0.55;
 static const int nmaster     = 1;
 static const int resizehints = 1;
@@ -69,7 +95,7 @@ static const Layout layouts[] = {
 /* helper for spawning shell commands in the pre dwm-5.0 fashion */
 #define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
 
-/* commands */
+/* Comandos chamados pelos atalhos. Mantem caminhos explicitos para os builds em /usr/local. */
 static char dmenumon[2] = "0";
 static const char *dmenucmd[]     = { "/usr/local/bin/dmenu_run", "-i", "-m", dmenumon, NULL };
 static const char *termcmd[]      = { "/usr/local/bin/st", "-e", "tmux", NULL };
@@ -96,6 +122,7 @@ tagindex(unsigned int tagset)
 static void
 viewrel(const Arg *arg)
 {
+	/* Navegacao relativa entre tags, equivalente ao fluxo antigo de desktops. */
 	int i = tagindex(selmon->tagset[selmon->seltags]);
 	int next = i + arg->i;
 
@@ -110,6 +137,7 @@ viewrel(const Arg *arg)
 static void
 tagrel(const Arg *arg)
 {
+	/* Move a janela atual para a tag anterior/proxima sem precisar escolher numero. */
 	int i, next;
 
 	if (!selmon->sel)
@@ -127,6 +155,7 @@ tagrel(const Arg *arg)
 static void
 lowerclient(const Arg *arg)
 {
+	/* Aproxima o comportamento de Alt-Escape: abaixa a janela e foca a proxima. */
 	if (!selmon->sel)
 		return;
 	XLowerWindow(dpy, selmon->sel->win);

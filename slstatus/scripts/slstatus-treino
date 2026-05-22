@@ -1,3 +1,4 @@
 #!/bin/sh
 
+# treino-show ainda emite markup pango para o tint2; slstatus/dwm usam texto puro.
 /usr/local/bin/treino-show 2>/dev/null | sed 's/<[^>]*>//g'

@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# psuinfo as vezes falha ou retorna vazio por um ciclo.
+# Para evitar "n/a" piscando na barra, guardamos o ultimo valor valido.
 cache="${XDG_CACHE_HOME:-$HOME/.cache}/slstatus-psu"
 
 out=$(/usr/bin/psuinfo -CgMk -N 2>/dev/null)
@@ -7,5 +9,6 @@ if [ -n "$out" ]; then
 	printf '%s\n' "$out" > "$cache"
 	printf '%s\n' "$out"
 elif [ -s "$cache" ]; then
+	# Se o comando falhar, mostra o ultimo valor bom.
 	cat "$cache"
 fi

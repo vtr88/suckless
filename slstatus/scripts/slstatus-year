@@ -1,5 +1,6 @@
 #!/bin/sh
 
+# Percentual do ciclo anual pessoal, mantendo a logica que existia no tint2.
 start=$(date -d "$(date +%Y)-03-11" +%s)
 now=$(date +%s)
 days=$(( (now - start) / 86400 ))

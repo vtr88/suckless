@@ -57,6 +57,7 @@
 #define TAGMASK                 ((1 << LENGTH(tags)) - 1)
 #define TEXTW(X)                (drw_fontset_getwidth(drw, (X)) + lrpad)
 
+/* Constantes XEmbed usadas pela systray embutida. */
 #define SYSTEM_TRAY_REQUEST_DOCK    0
 #define XEMBED_EMBEDDED_NOTIFY      0
 #define XEMBED_WINDOW_ACTIVATE      1
@@ -99,6 +100,7 @@ typedef struct Monitor Monitor;
 typedef struct Client Client;
 struct Client {
 	char name[256];
+	/* Nome curto usado nas tags: st, firefox, spotify, etc. */
 	char appname[32];
 	float mina, maxa;
 	int x, y, w, h;
@@ -106,6 +108,7 @@ struct Client {
 	int basew, baseh, incw, inch, maxw, maxh, minw, minh, hintsvalid;
 	int bw, oldbw;
 	unsigned int tags;
+	/* isfullscreenrule marca fullscreen vindo de regra, nao de pedido do app. */
 	int isfixed, isfloating, isurgent, neverfocus, oldstate, isfullscreen, isfullscreenrule;
 	Client *next;
 	Client *snext;
@@ -158,6 +161,7 @@ typedef struct {
 
 typedef struct Systray Systray;
 struct Systray {
+	/* Janela dona da selecao _NET_SYSTEM_TRAY; os icones sao reparentados nela. */
 	Window win;
 	Client *icons;
 };
@@ -271,6 +275,7 @@ static void zoom(const Arg *arg);
 /* variables */
 static Systray *systray = NULL;
 static const char broken[] = "broken";
+/* Status colorido do slstatus; precisa ser maior que o padrao por causa dos marcadores ^c#rrggbb^. */
 static char stext[2048];
 static int screen;
 static int sw, sh;           /* X display screen geometry width, height */
@@ -305,6 +310,10 @@ validstatuscolor(const char *p)
 {
 	int i;
 
+	/*
+	 * O parser de status aceita ^c#rrggbb^ e ^b#rrggbb^.
+	 * Validar antes de chamar Xft evita crash quando uma string chega truncada.
+	 */
 	if ((p[1] != 'c' && p[1] != 'b') || p[2] != '#')
 		return 0;
 	for (i = 3; i < 9; i++)
@@ -339,6 +348,7 @@ applyrules(Client *c)
 	XGetClassHint(dpy, c->win, &ch);
 	class    = ch.res_class ? ch.res_class : broken;
 	instance = ch.res_name  ? ch.res_name  : broken;
+	/* Guarda uma etiqueta curta para desenhar nas tags em vez do titulo inteiro. */
 	strncpy(c->appname, appname(class, instance, c->name), sizeof c->appname - 1);
 
 	for (i = 0; i < LENGTH(rules); i++) {
@@ -365,6 +375,10 @@ applyrules(Client *c)
 const char *
 appname(const char *class, const char *instance, const char *title)
 {
+	/*
+	 * Mapeia classes X11 para nomes pequenos de barra.
+	 * Isso evita que as tags fiquem largas demais com titulos longos.
+	 */
 	if (strstr(class, "st-256color") || strstr(class, "St"))
 		return "st";
 	if (strstr(class, "firefox"))
@@ -604,6 +618,11 @@ clientmessage(XEvent *e)
 
 	if (showsystray && systray && cme->window == systray->win && cme->message_type == netatom[NetSystemTrayOP]) {
 		if (cme->data.l[1] == SYSTEM_TRAY_REQUEST_DOCK) {
+			/*
+			 * Quando um app pede dock, criamos um Client minimo so para a
+			 * systray. Ele nao participa do tiling; e reparentado para a
+			 * janela da bandeja e redimensionado para a altura da barra.
+			 */
 			if (!(c = calloc(1, sizeof(Client))))
 				die("fatal: could not malloc() %u bytes\n", sizeof(Client));
 			if (!(c->win = cme->data.l[2])) {
@@ -846,6 +865,7 @@ drawbar(Monitor *m)
 	if (m == selmon) { /* status is only drawn on selected monitor */
 		drw_setscheme(drw, scheme[SchemeNorm]);
 		tw = statusw(stext) + 2; /* 2px right padding */
+		/* Status fica antes da systray; stw reserva espaco real para os icones. */
 		drawstatus(m->ww - tw - stw, tw, stext);
 	}
 
@@ -856,6 +876,7 @@ drawbar(Monitor *m)
 	}
 	x = 0;
 	for (i = 0; i < LENGTH(tags); i++) {
+		/* label contem o numero da tag + apps abertos nela, ex: 2:firefox. */
 		taglabel(m, i, label, sizeof label);
 		w = TEXTW(label);
 		drw_setscheme(drw, scheme[m->tagset[m->seltags] & 1 << i ? SchemeSel : SchemeNorm]);
@@ -873,6 +894,7 @@ drawbar(Monitor *m)
 	if ((w = m->ww - tw - stw - x) > bh) {
 		if (m->sel) {
 			drw_setscheme(drw, scheme[SchemeNorm]);
+			/* O titulo longo da janela nao e desenhado; a identidade fica nas tags. */
 			drw_rect(drw, x, 0, w, bh, 1, 1);
 			if (m->sel->isfloating)
 				drw_rect(drw, x + boxs, boxs, boxw, boxw, m->sel->isfixed, 0);
@@ -899,6 +921,11 @@ drawstatus(int x, int w, const char *stext)
 	drw_setscheme(drw, statusscheme);
 	drw_rect(drw, x, 0, w, bh, 1, 1);
 
+	/*
+	 * Parser simples de "status2d":
+	 * ^c#rrggbb^ muda foreground, ^b#rrggbb^ muda background,
+	 * ^d^ volta para o esquema normal. Texto comum e desenhado em blocos.
+	 */
 	for (text = p = stext; *p; p++) {
 		if (*p != '^')
 			continue;
@@ -1965,6 +1992,10 @@ statusw(const char *stext)
 	int w = 0;
 	const char *text, *p;
 
+	/*
+	 * Calcula a largura visual ignorando marcadores de cor.
+	 * Tem que espelhar drawstatus() para o alinhamento da direita bater.
+	 */
 	for (text = p = stext; *p; p++) {
 		if (*p != '^')
 			continue;
@@ -1997,6 +2028,7 @@ taglabel(Monitor *m, unsigned int tag, char *buf, size_t size)
 		if (!(c->tags & (1 << tag)))
 			continue;
 		name = c->appname[0] ? c->appname : "win";
+		/* Evita repetir o mesmo app varias vezes na mesma tag. */
 		snprintf(key, sizeof key, ",%s,", name);
 		if (strstr(used, key))
 			continue;
@@ -2372,6 +2404,7 @@ updatesystrayicongeom(Client *i, int w, int h)
 {
 	if (!i)
 		return;
+	/* Mantem icones proporcionais, mas nunca mais altos que a barra. */
 	i->h = bh;
 	if (w == h)
 		i->w = bh;
@@ -2398,6 +2431,7 @@ updatesystrayiconstate(Client *i, XPropertyEvent *ev)
 	if (!showsystray || !systray || !i || ev->atom != xatom[XembedInfo]
 	|| !(flags = getatomprop(i, xatom[XembedInfo])))
 		return;
+	/* Alguns icones alternam estado mapped/unmapped via _XEMBED_INFO. */
 	if ((flags & XEMBED_MAPPED) && !i->tags) {
 		i->tags = 1;
 		code = XEMBED_WINDOW_ACTIVATE;
@@ -2432,6 +2466,10 @@ updatesystray(void)
 	x = m->mx + m->mw;
 
 	if (!systray) {
+		/*
+		 * Cria a janela dona da selecao _NET_SYSTEM_TRAY_S0.
+		 * Sem isso, nm-applet/volumeicon ficam sem onde encaixar.
+		 */
 		if (!(systray = calloc(1, sizeof(Systray))))
 			die("fatal: could not malloc() %u bytes\n", sizeof(Systray));
 		systray->win = XCreateSimpleWindow(dpy, root, x, m->by, 1, bh, 0, 0, scheme[SchemeNorm][ColBg].pixel);
@@ -2456,6 +2494,7 @@ updatesystray(void)
 	}
 
 	for (w = 0, i = systray->icons; i; i = i->next) {
+		/* Recalcula a posicao dos icones a cada atualizacao do status/barra. */
 		wa.background_pixel = scheme[SchemeNorm][ColBg].pixel;
 		XChangeWindowAttributes(dpy, i->win, CWBackPixel, &wa);
 		XMapRaised(dpy, i->win);

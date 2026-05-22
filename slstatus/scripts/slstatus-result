@@ -1,3 +1,6 @@
 #!/bin/sh
 
+# Remove markup pango do arquivo antigo do tint2.
+# O emoji de bandeira pode aparecer como "BR" no Xft; o marcador abaixo usa
+# blocos coloridos que o parser de cores do dwm desenha de forma confiavel.
 sed 's/<[^>]*>//g; s/🇧🇷/^c#009739^▰^c#fedd00^◆^c#3e4095^●^c#8ec07c^/g' "$HOME/.config/tint2/result.txt" 2>/dev/null

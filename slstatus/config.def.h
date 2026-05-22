@@ -1,12 +1,17 @@
 /* See LICENSE file for copyright and license details. */
 
-/* interval between updates (in ms) */
+/*
+ * Intervalo global do slstatus.
+ *
+ * Diferente do tint2, aqui todos os itens rodam no mesmo ciclo. Por isso os
+ * comandos mais lentos usam scripts com cache em scripts/.
+ */
 const unsigned int interval = 1000;
 
 /* text to show if no value can be retrieved */
 static const char unknown_str[] = "n/a";
 
-/* maximum output string length */
+/* Linha grande o suficiente para status colorido com marcadores ^c#rrggbb^. */
 #define MAXLEN 2048
 
 /*
@@ -66,11 +71,22 @@ static const char unknown_str[] = "n/a";
  */
 static const struct arg args[] = {
 	/* function format          argument */
+	/*
+	 * Os marcadores ^c#rrggbb^ e ^d^ sao interpretados pelo patch local
+	 * do dwm. No terminal eles aparecem literais; na barra viram cores.
+	 */
+	/* psuinfo: memoria/rede/carga visual. O helper guarda ultimo valor bom. */
 	{ run_command, "^c#fabd2f^%s^d^  ", "/usr/local/bin/slstatus-psu" },
+	/* Treino atual, sem markup pango vindo do comando original. */
 	{ run_command, "^c#b8bb26^%s^d^  ", "/usr/local/bin/slstatus-treino" },
+	/* Resultado do bicho, tambem sem pango e com marcador colorido para Brasil. */
 	{ run_command, "^c#8ec07c^%s^d^  ", "/usr/local/bin/slstatus-result" },
+	/* Clima cacheado para nao chamar wttr.in a cada segundo. */
 	{ run_command, "^c#83a598^☁ %s^d^  ", "/usr/local/bin/slstatus-weather" },
+	/* Progresso anual contado a partir de 11/03, como no setup antigo. */
 	{ run_command, "^c#d3869b^◷ %s^d^  ", "/usr/local/bin/slstatus-year" },
+	/* Bateria local detectada como BAT1 neste notebook. */
 	{ battery_perc, "^c#fe8019^bat %s%%^d^  ", "BAT1" },
+	/* Relogio completo; pode ser encurtado se a barra ficar apertada. */
 	{ datetime, "^c#ebdbb2^%s^d^", "%c" },
 };
