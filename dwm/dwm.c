@@ -21,6 +21,7 @@
  * To understand everything else, start reading main().
  */
 #include <errno.h>
+#include <ctype.h>
 #include <locale.h>
 #include <signal.h>
 #include <stdarg.h>
@@ -270,7 +271,7 @@ static void zoom(const Arg *arg);
 /* variables */
 static Systray *systray = NULL;
 static const char broken[] = "broken";
-static char stext[256];
+static char stext[2048];
 static int screen;
 static int sw, sh;           /* X display screen geometry width, height */
 static int bh;               /* bar height */
@@ -298,6 +299,19 @@ static Atom wmatom[WMLast], netatom[NetLast], xatom[XLast];
 static int running = 1;
 static Cur *cursor[CurLast];
 static Clr **scheme;
+
+static int
+validstatuscolor(const char *p)
+{
+	int i;
+
+	if ((p[1] != 'c' && p[1] != 'b') || p[2] != '#')
+		return 0;
+	for (i = 3; i < 9; i++)
+		if (!isxdigit((unsigned char)p[i]))
+			return 0;
+	return p[9] == '^';
+}
 static Display *dpy;
 static Drw *drw;
 static Monitor *mons, *selmon;
@@ -873,7 +887,7 @@ drawbar(Monitor *m)
 int
 drawstatus(int x, int w, const char *stext)
 {
-	char buf[256];
+	char buf[2048];
 	char col[8];
 	const char *text, *p;
 	int dynbg = 0, dynfg = 0, ret = x, sw;
@@ -894,7 +908,7 @@ drawstatus(int x, int w, const char *stext)
 			drw_text(drw, x, 0, sw, bh, 0, buf, 0);
 			x += sw;
 		}
-		if (p[1] == 'c' && p[2] == '#') {
+		if (validstatuscolor(p) && p[1] == 'c') {
 			if (dynfg)
 				drw_clr_free(drw, &statusscheme[ColFg]);
 			memcpy(col, p + 2, 7);
@@ -902,7 +916,7 @@ drawstatus(int x, int w, const char *stext)
 			drw_clr_create(drw, &statusscheme[ColFg], col);
 			dynfg = 1;
 			p += 9;
-		} else if (p[1] == 'b' && p[2] == '#') {
+		} else if (validstatuscolor(p) && p[1] == 'b') {
 			if (dynbg)
 				drw_clr_free(drw, &statusscheme[ColBg]);
 			memcpy(col, p + 2, 7);
@@ -1947,7 +1961,7 @@ spawn(const Arg *arg)
 int
 statusw(const char *stext)
 {
-	char buf[256];
+	char buf[2048];
 	int w = 0;
 	const char *text, *p;
 
@@ -1958,7 +1972,7 @@ statusw(const char *stext)
 			snprintf(buf, MIN((size_t)(p - text + 1), sizeof buf), "%s", text);
 			w += drw_fontset_getwidth(drw, buf);
 		}
-		if ((p[1] == 'c' || p[1] == 'b') && p[2] == '#')
+		if (validstatuscolor(p))
 			p += 9;
 		else if (p[1] == 'd' && p[2] == '^')
 			p += 2;
