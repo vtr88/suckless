@@ -3,6 +3,11 @@
 /* appearance */
 static const unsigned int borderpx  = 1;
 static const unsigned int snap      = 32;
+static const unsigned int systraypinning = 0;
+static const unsigned int systrayonleft = 0;
+static const unsigned int systrayspacing = 2;
+static const int systraypinningfailfirst = 1;
+static const int showsystray        = 1;
 static const int showbar            = 1;
 static const int topbar             = 0;
 static const char *fonts[]          = { "Noto Sans:style=Bold:size=9", "Noto Color Emoji:size=9" };
