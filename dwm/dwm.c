@@ -2473,11 +2473,10 @@ updatesystray(void)
 		if (!(systray = calloc(1, sizeof(Systray))))
 			die("fatal: could not malloc() %u bytes\n", sizeof(Systray));
 		systray->win = XCreateSimpleWindow(dpy, root, x, m->by, 1, bh, 0, 0, scheme[SchemeNorm][ColBg].pixel);
-		/* Mantem eventos da janela da bandeja e dos icones filhos no mesmo mask. */
-		wa.event_mask = ButtonPressMask|ExposureMask|SubstructureNotifyMask;
+		wa.event_mask = ButtonPressMask|ExposureMask;
 		wa.override_redirect = True;
 		wa.background_pixel = scheme[SchemeNorm][ColBg].pixel;
-		XSelectInput(dpy, systray->win, wa.event_mask);
+		XSelectInput(dpy, systray->win, SubstructureNotifyMask);
 		XChangeProperty(dpy, systray->win, netatom[NetSystemTrayOrientation], XA_CARDINAL, 32,
 			PropModeReplace, (unsigned char *)&netatom[NetSystemTrayOrientationHorz], 1);
 		XChangeWindowAttributes(dpy, systray->win, CWEventMask|CWOverrideRedirect|CWBackPixel, &wa);
