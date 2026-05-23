@@ -9,6 +9,7 @@ Ferramentas
 -----------
 - `dmenu`: menu dinamico para X.
 - `dwm`: window manager dinamico para X.
+- `keynav`: controle do mouse pelo teclado.
 - `slstatus`: gerador de status para a barra do dwm.
 - `slock`: bloqueador simples de tela X.
 - `st`: terminal simples para X.
@@ -19,6 +20,11 @@ Entre no diretorio da ferramenta desejada e rode `make`:
 
     cd dwm
     make
+
+O `keynav` nao e uma ferramenta suckless, mas fica neste repositorio porque
+tambem faz parte do setup basico de uma maquina nova. Ele precisa dos headers
+de desenvolvimento usados pelo projeto original, por exemplo `libglib2.0-dev`
+e as bibliotecas X/Cairo correspondentes.
 
 Como instalar
 -------------
