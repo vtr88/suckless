@@ -351,14 +351,6 @@ main(int argc, char **argv) {
 	if (!(dpy = XOpenDisplay(NULL)))
 		die("slock: cannot open display\n");
 
-	/* drop privileges */
-	if (setgroups(0, NULL) < 0)
-		die("slock: setgroups: %s\n", strerror(errno));
-	if (setgid(dgid) < 0)
-		die("slock: setgid: %s\n", strerror(errno));
-	if (setuid(duid) < 0)
-		die("slock: setuid: %s\n", strerror(errno));
-
 	/* check for Xrandr support */
 	rr.active = XRRQueryExtension(dpy, &rr.evbase, &rr.errbase);
 
@@ -380,14 +372,32 @@ main(int argc, char **argv) {
 
 	/* run post-lock command */
 	if (argc > 0) {
+		posix_spawnattr_t attr;
 		pid_t pid;
 		extern char **environ;
-		int err = posix_spawnp(&pid, argv[0], NULL, NULL, argv, environ);
+		int err;
+
+		if ((err = posix_spawnattr_init(&attr)))
+			die("slock: posix_spawnattr_init: %s\n", strerror(err));
+		/* Run the helper as the invoking user, never as slock's setuid user. */
+		if ((err = posix_spawnattr_setflags(&attr, POSIX_SPAWN_RESETIDS)))
+			die("slock: posix_spawnattr_setflags: %s\n", strerror(err));
+
+		err = posix_spawnp(&pid, argv[0], NULL, &attr, argv, environ);
+		posix_spawnattr_destroy(&attr);
 		if (err) {
 			die("slock: failed to execute post-lock command: %s: %s\n",
 			    argv[0], strerror(err));
 		}
 	}
+
+	/* drop privileges */
+	if (setgroups(0, NULL) < 0)
+		die("slock: setgroups: %s\n", strerror(errno));
+	if (setgid(dgid) < 0)
+		die("slock: setgid: %s\n", strerror(errno));
+	if (setuid(duid) < 0)
+		die("slock: setuid: %s\n", strerror(errno));
 
 	/* everything is now blank. Wait for the correct password */
 	readpw(dpy, &rr, locks, nscreens, hash);
