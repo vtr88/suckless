@@ -380,7 +380,7 @@ appname(const char *class, const char *instance, const char *title)
 	 * Isso evita que as tags fiquem largas demais com titulos longos.
 	 */
 	if (strstr(class, "st-256color") || strstr(class, "St"))
-		return "st";
+		return "st-mux";
 	if (strstr(class, "firefox"))
 		return "firefox";
 	if (strstr(class, "Spotify"))
