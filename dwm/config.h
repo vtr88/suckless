@@ -73,7 +73,8 @@ static const Rule rules[] = {
 static const float mfact     = 0.55;
 static const int nmaster     = 1;
 static const int resizehints = 1;
-static const int lockfullscreen = 1;
+/* alt tab não funciona no fullscreen com 1 */
+static const int lockfullscreen = 0;
 static const int refreshrate = 120;
 
 static const Layout layouts[] = {
@@ -150,6 +151,8 @@ tagrel(const Arg *arg)
 		next = LENGTH(tags) - 1;
 	if (next != i)
 		tag(&(Arg){.ui = 1 << next});
+        /* manda pra outra tag e segue a janela. */
+        view(&(Arg){.ui = 1 << next});
 }
 
 static void
