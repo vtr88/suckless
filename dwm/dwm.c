@@ -1098,6 +1098,8 @@ focusstack(const Arg *arg)
 					c = i;
 	}
 	if (c) {
+		if (selmon->sel && selmon->sel->isfullscreen && selmon->sel != c && !lockfullscreen)
+			XLowerWindow(dpy, selmon->sel->win);
 		focus(c);
 		restack(selmon);
 	}
