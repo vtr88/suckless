@@ -48,8 +48,8 @@ semicolon warp,end
 1 click 1
 2 click 2
 3 click 3
-4 click 4
-5 click 5
+4 warp,click 4
+5 warp,click 5
 
 # Zoom to the current window
 w windowzoom

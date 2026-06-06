@@ -1198,10 +1198,20 @@ void cmd_click(char *args) {
 
   int button;
   button = atoi(args);
-  if (button > 0)
+  if (button > 0) {
+    if (button >= 4 && button <= 7 && zone) {
+      XUnmapWindow(dpy, zone);
+      XSync(dpy, False);
+      xdo_click_window(xdo, CURRENTWINDOW, button);
+      XSync(dpy, False);
+      XMapRaised(dpy, zone);
+      XSync(dpy, False);
+      return;
+    }
     xdo_click_window(xdo, CURRENTWINDOW, button);
-  else
+  } else {
     fprintf(stderr, "Negative mouse button is invalid: %d\n", button);
+  }
 }
 
 void cmd_doubleclick(char *args) {
