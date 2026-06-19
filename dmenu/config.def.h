@@ -21,6 +21,8 @@ static unsigned int lineheight = 28;
 static unsigned int centered   = 1;
 static unsigned int menuwidth  = 720;
 static unsigned int borderpx   = 2;
+static unsigned int backdrop   = 1;
+static float backdropopacity   = 0.25;
 
 /*
  * Characters not considered part of a word while deleting words

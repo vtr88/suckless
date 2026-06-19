@@ -46,7 +46,7 @@ static int mon = -1, screen;
 
 static Atom clip, utf8;
 static Display *dpy;
-static Window root, parentwin, win;
+static Window root, parentwin, win, backdropwin;
 static XIC xic;
 
 static Drw *drw;
@@ -101,6 +101,8 @@ cleanup(void)
 	size_t i;
 
 	XUngrabKeyboard(dpy, CurrentTime);
+	if (backdropwin)
+		XDestroyWindow(dpy, backdropwin);
 	for (i = 0; i < SchemeLast; i++)
 		drw_scm_free(drw, scheme[i], 2);
 	for (i = 0; items && items[i].text; ++i)
@@ -620,6 +622,7 @@ setup(void)
 	Window w, dw, *dws;
 	XWindowAttributes wa;
 	XClassHint ch = {"dmenu", "dmenu"};
+	XClassHint backdropch = {"dmenu-backdrop", "dmenu-backdrop"};
 #ifdef XINERAMA
 	XineramaScreenInfo *info;
 	Window pw;
@@ -692,6 +695,25 @@ setup(void)
 	promptw = (prompt && *prompt) ? TEXTW(prompt) - lrpad / 4 : 0;
 	inputw = mw / 3; /* input width: ~33% of monitor width */
 	match();
+
+	if (backdrop && parentwin == root) {
+		unsigned long opacity;
+		Atom opacityatom;
+
+		swa.override_redirect = True;
+		swa.background_pixel = BlackPixel(dpy, screen);
+		swa.event_mask = 0;
+		backdropwin = XCreateWindow(dpy, root, monx, mony, monw, monh, 0,
+		                            CopyFromParent, CopyFromParent, CopyFromParent,
+		                            CWOverrideRedirect | CWBackPixel | CWEventMask, &swa);
+		opacity = 0xffffffffu * MAX(0.0, MIN(backdropopacity, 1.0));
+		opacityatom = XInternAtom(dpy, "_NET_WM_WINDOW_OPACITY", False);
+		XChangeProperty(dpy, backdropwin, opacityatom, XA_CARDINAL, 32,
+		                PropModeReplace, (unsigned char *)&opacity, 1);
+		XSetClassHint(dpy, backdropwin, &backdropch);
+		XStoreName(dpy, backdropwin, "dmenu-backdrop");
+		XMapRaised(dpy, backdropwin);
+	}
 
 	/* create menu window */
 	swa.override_redirect = True;
