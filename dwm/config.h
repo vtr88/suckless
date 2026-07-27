@@ -21,16 +21,23 @@ static const int topbar             = 0;
 /* Fonte mais pesada para legibilidade e fallback para emoji/glyphs do status. */
 static const char *fonts[]          = { "Noto Sans:style=Bold:size=10", "Noto Color Emoji:size=10" };
 static const char dmenufont[]       = "Roboto:size=9";
-static const char col_gray1[]       = "#34362a";
+static const char col_gray1[]       = "#2e2821";
 static const char col_gray2[]       = "#4b4d3b";
 static const char col_gray3[]       = "#bdca58";
 static const char col_gray4[]       = "#fbf1c7";
-static const char col_green[]       = "#96a542";
+static const char col_orange[]      = "#ff9f3f";
+static const char col_selectedbg[]  = "#241f1a";
+static const char col_statusbg[]    = "#2e2821";
 static const char *colors[][3]      = {
 	/*               fg         bg         border   */
 	[SchemeNorm] = { col_gray3, col_gray1, col_gray2 },
-	/* Verde so no fundo da tag selecionada; borda fica escura. */
-	[SchemeSel]  = { col_gray1, col_green, col_gray1 },
+	/* A tag selecionada ganha apenas um marrom mais profundo. */
+	[SchemeSel]  = { col_gray3, col_selectedbg, col_selectedbg },
+	/* O slstatus e o restante da barra compartilham a mesma base marrom. */
+	[SchemeStatus] = { col_gray3, col_statusbg, col_statusbg },
+	/* Numeros laranja; nomes dos aplicativos continuam verdes. */
+	[SchemeTagNum] = { col_orange, col_gray1, col_gray2 },
+	[SchemeTagNumSel] = { col_orange, col_selectedbg, col_selectedbg },
 };
 
 /*

@@ -71,7 +71,13 @@
 
 /* enums */
 enum { CurNormal, CurResize, CurMove, CurLast }; /* cursor */
-enum { SchemeNorm, SchemeSel }; /* color schemes */
+enum {
+	SchemeNorm,
+	SchemeSel,
+	SchemeStatus,
+	SchemeTagNum,
+	SchemeTagNumSel
+}; /* color schemes */
 enum { NetSupported, NetWMName, NetWMState, NetWMCheck,
        NetSystemTray, NetSystemTrayOP, NetSystemTrayOrientation, NetSystemTrayOrientationHorz,
        NetWMFullscreen, NetActiveWindow, NetWMWindowType,
@@ -890,11 +896,19 @@ drawbar(Monitor *m)
 	}
 	x = 0;
 	for (i = 0; i < LENGTH(tags); i++) {
+		int selected = m->tagset[m->seltags] & 1 << i;
+		int numw;
+		const char *apps;
+
 		/* label contem o numero da tag + apps abertos nela, ex: 2 firefox. */
 		taglabel(m, i, label, sizeof label);
 		w = TEXTW(label);
-		drw_setscheme(drw, scheme[m->tagset[m->seltags] & 1 << i ? SchemeSel : SchemeNorm]);
-		drw_text(drw, x, 0, w, bh, lrpad / 2, label, urg & 1 << i);
+		apps = label + strlen(tags[i]);
+		numw = drw_fontset_getwidth(drw, tags[i]) + lrpad / 2;
+		drw_setscheme(drw, scheme[selected ? SchemeTagNumSel : SchemeTagNum]);
+		drw_text(drw, x, 0, numw, bh, lrpad / 2, tags[i], urg & 1 << i);
+		drw_setscheme(drw, scheme[selected ? SchemeSel : SchemeNorm]);
+		drw_text(drw, x + numw, 0, w - numw, bh, 0, apps, urg & 1 << i);
 		if (occ & 1 << i)
 			drw_rect(drw, x + boxs, boxs, boxw, boxw,
 				m == selmon && selmon->sel && selmon->sel->tags & 1 << i,
@@ -929,9 +943,9 @@ drawstatus(int x, int w, const char *stext)
 	int dynbg = 0, dynfg = 0, ret = x, sw;
 	Clr statusscheme[3];
 
-	statusscheme[ColFg] = scheme[SchemeNorm][ColFg];
-	statusscheme[ColBg] = scheme[SchemeNorm][ColBg];
-	statusscheme[ColBorder] = scheme[SchemeNorm][ColBorder];
+	statusscheme[ColFg] = scheme[SchemeStatus][ColFg];
+	statusscheme[ColBg] = scheme[SchemeStatus][ColBg];
+	statusscheme[ColBorder] = scheme[SchemeStatus][ColBorder];
 	drw_setscheme(drw, statusscheme);
 	drw_rect(drw, x, 0, w, bh, 1, 1);
 
@@ -970,8 +984,8 @@ drawstatus(int x, int w, const char *stext)
 				drw_clr_free(drw, &statusscheme[ColFg]);
 			if (dynbg)
 				drw_clr_free(drw, &statusscheme[ColBg]);
-			statusscheme[ColFg] = scheme[SchemeNorm][ColFg];
-			statusscheme[ColBg] = scheme[SchemeNorm][ColBg];
+			statusscheme[ColFg] = scheme[SchemeStatus][ColFg];
+			statusscheme[ColBg] = scheme[SchemeStatus][ColBg];
 			dynfg = dynbg = 0;
 			p += 2;
 		}
