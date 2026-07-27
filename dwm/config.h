@@ -21,11 +21,11 @@ static const int topbar             = 0;
 /* Fonte mais pesada para legibilidade e fallback para emoji/glyphs do status. */
 static const char *fonts[]          = { "Noto Sans:style=Bold:size=10", "Noto Color Emoji:size=10" };
 static const char dmenufont[]       = "Roboto:size=9";
-static const char col_gray1[]       = "#282828";
-static const char col_gray2[]       = "#504945";
-static const char col_gray3[]       = "#bdae93";
+static const char col_gray1[]       = "#3a3328";
+static const char col_gray2[]       = "#53483a";
+static const char col_gray3[]       = "#a9b94f";
 static const char col_gray4[]       = "#fbf1c7";
-static const char col_green[]       = "#b8bb26";
+static const char col_green[]       = "#96a542";
 static const char *colors[][3]      = {
 	/*               fg         bg         border   */
 	[SchemeNorm] = { col_gray3, col_gray1, col_gray2 },
