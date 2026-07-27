@@ -93,35 +93,40 @@ char *termname = "st-256color";
  */
 unsigned int tabspaces = 8;
 
-/* Terminal colors (16 first used in escape sequence) */
+/*
+ * Paleta Gruvwood: madeira, oliva e laranja.
+ *
+ * Os 16 primeiros valores sao as cores ANSI. Os indices extras no final
+ * alimentam foreground/background/cursor padrao.
+ */
 static const char *colorname[] = {
 	/* 8 normal colors */
-	"#282828",
-	"#cc241d",
-	"#98971a",
-	"#d79921",
-	"#458588",
-	"#b16286",
-	"#689d6a",
-	"#a89984",
+	"#342d24",
+	"#d8752e",
+	"#96a542",
+	"#c99738",
+	"#899944",
+	"#aa8234",
+	"#829743",
+	"#d5c4a1",
 
 	/* 8 bright colors */
-	"#928374",
-	"#fb4934",
-	"#b8bb26",
-	"#fabd2f",
-	"#83a598",
-	"#d3869b",
-	"#8ec07c",
-	"#ebdbb2",
+	"#756653",
+	"#f28c38",
+	"#bdca58",
+	"#edbd4f",
+	"#afbd55",
+	"#d2a442",
+	"#a9bc52",
+	"#fbf1c7",
 
 	[255] = 0,
 
 	/* more colors can be added after 255 to use with DefaultXX */
-	"#ebdbb2",
-	"#282828",
+	"#ff9f3f",
+	"#3a3328",
 	"#ebdbb2", /* default foreground colour */
-	"#282828", /* default background colour */
+	"#3a3328", /* default background colour */
 };
 
 
