@@ -165,6 +165,11 @@ typedef struct {
 	int monitor;
 } Rule;
 
+typedef struct {
+	const char *class;
+	const char *const *cmd;
+} Launcher;
+
 typedef struct Systray Systray;
 struct Systray {
 	/* Janela dona da selecao _NET_SYSTEM_TRAY; os icones sao reparentados nela. */
@@ -201,6 +206,7 @@ static void expose(XEvent *e);
 static void focus(Client *c);
 static void focusin(XEvent *e);
 static void focusmon(const Arg *arg);
+static void focusorlaunch(const Arg *arg);
 static void focusstack(const Arg *arg);
 static Atom getatomprop(Client *c, Atom prop);
 static int getrootptr(int *x, int *y);
@@ -1067,6 +1073,43 @@ focus(Client *c)
 	}
 	selmon->sel = c;
 	drawbars();
+}
+
+void
+focusorlaunch(const Arg *arg)
+{
+	const Launcher *launcher = arg->v;
+	Client *c;
+	Monitor *m;
+	XClassHint ch = { NULL, NULL };
+	int match;
+
+	for (m = mons; m; m = m->next) {
+		for (c = m->clients; c; c = c->next) {
+			match = 0;
+			if (XGetClassHint(dpy, c->win, &ch)) {
+				match = (ch.res_class && strstr(ch.res_class, launcher->class))
+					|| (ch.res_name && strstr(ch.res_name, launcher->class));
+				if (ch.res_class)
+					XFree(ch.res_class);
+				if (ch.res_name)
+					XFree(ch.res_name);
+				ch.res_class = ch.res_name = NULL;
+			}
+			if (!match)
+				continue;
+			if (c->mon != selmon) {
+				unfocus(selmon->sel, 0);
+				selmon = c->mon;
+			}
+			view(&(Arg){.ui = c->tags});
+			focus(c);
+			restack(selmon);
+			return;
+		}
+	}
+
+	spawn(&(Arg){.v = launcher->cmd});
 }
 
 /* there are some broken focus acquiring clients needing extra handling */
