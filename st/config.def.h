@@ -5,7 +5,9 @@
  *
  * font: see http://freedesktop.org/software/fontconfig/fontconfig-user.html
  */
+/* Fonte principal do terminal; tamanho ajustado para tmux e para a janela quase cheia. */
 static char *font = "Fira Code Retina:size=11:antialias=true:autohint=true";
+/* Um pixel de margem interna para lembrar o comportamento visual do Alacritty antigo. */
 static int borderpx = 1;
 
 /*
@@ -152,6 +154,7 @@ static unsigned int cursorshape = 2;
  * Default columns and rows numbers
  */
 
+/* Tamanho inicial pensado para abrir quase ocupando a tela, sem depender do WM. */
 static unsigned int cols = 150;
 static unsigned int rows = 38;
 
@@ -188,7 +191,12 @@ static MouseShortcut mshortcuts[] = {
 	{ XK_ANY_MOD,           Button5, ttysend,        {.s = "\005"} },
 };
 
-/* Internal keyboard shortcuts. */
+/*
+ * Atalhos internos.
+ *
+ * Ctrl + / Ctrl - / Ctrl 0 foram adicionados porque eram essenciais no fluxo
+ * antigo; st lida melhor com isso do que o urxvt que quebrava a janela.
+ */
 #define MODKEY Mod1Mask
 #define TERMMOD (ControlMask|ShiftMask)
 

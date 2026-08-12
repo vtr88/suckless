@@ -79,7 +79,8 @@ static const Rule rules[] = {
 static const float mfact     = 0.55;
 static const int nmaster     = 1;
 static const int resizehints = 0;
-static const int lockfullscreen = 1;
+/* alt tab não funciona no fullscreen com 1 */
+static const int lockfullscreen = 0;
 static const int refreshrate = 120;
 
 static const Layout layouts[] = {
@@ -157,6 +158,8 @@ tagrel(const Arg *arg)
 		next = LENGTH(tags) - 1;
 	if (next != i)
 		tag(&(Arg){.ui = 1 << next});
+        /* manda pra outra tag e segue a janela. */
+        view(&(Arg){.ui = 1 << next});
 }
 
 static void
@@ -171,13 +174,13 @@ lowerclient(const Arg *arg)
 
 static const Key keys[] = {
 	/* modifier                     key        function        argument */
-	{ ALTKEY,                       XK_1,      spawn,          {.v = dmenucmd } },
-	{ ALTKEY,                       XK_2,      spawn,          {.v = termcmd } },
-	{ ALTKEY,                       XK_3,      spawn,          {.v = firefoxcmd } },
-	{ ALTKEY,                       XK_4,      spawn,          {.v = spotifycmd } },
-	{ ALTKEY,                       XK_5,      spawn,          {.v = asepritecmd } },
-	{ ALTKEY,                       XK_6,      spawn,          {.v = renoisecmd } },
-	{ ALTKEY,                       XK_7,      spawn,          {.v = chatgptcmd } },
+	{ ALTKEY,                       XK_apostrophe, spawn,      {.v = dmenucmd } },
+	{ ALTKEY,                       XK_1,      spawn,          {.v = termcmd } },
+	{ ALTKEY,                       XK_2,      spawn,          {.v = firefoxcmd } },
+	{ ALTKEY,                       XK_3,      spawn,          {.v = spotifycmd } },
+	{ ALTKEY,                       XK_4,      spawn,          {.v = asepritecmd } },
+	{ ALTKEY,                       XK_5,      spawn,          {.v = renoisecmd } },
+	{ ALTKEY,                       XK_6,      spawn,          {.v = chatgptcmd } },
 	{ MODKEY,                       XK_l,      spawn,          {.v = lockcmd } },
 	{ MODKEY|ShiftMask,             XK_s,      spawn,          {.v = screenshotcmd } },
 	{ 0,                            XK_Print,  spawn,          {.v = gnomeshotcmd } },

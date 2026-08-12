@@ -174,13 +174,13 @@ lowerclient(const Arg *arg)
 
 static const Key keys[] = {
 	/* modifier                     key        function        argument */
-	{ ALTKEY,                       XK_1,      spawn,          {.v = dmenucmd } },
-	{ ALTKEY,                       XK_2,      spawn,          {.v = termcmd } },
-	{ ALTKEY,                       XK_3,      spawn,          {.v = firefoxcmd } },
-	{ ALTKEY,                       XK_4,      spawn,          {.v = spotifycmd } },
-	{ ALTKEY,                       XK_5,      spawn,          {.v = asepritecmd } },
-	{ ALTKEY,                       XK_6,      spawn,          {.v = renoisecmd } },
-	{ ALTKEY,                       XK_7,      spawn,          {.v = chatgptcmd } },
+	{ ALTKEY,                       XK_apostrophe, spawn,      {.v = dmenucmd } },
+	{ ALTKEY,                       XK_1,      spawn,          {.v = termcmd } },
+	{ ALTKEY,                       XK_2,      spawn,          {.v = firefoxcmd } },
+	{ ALTKEY,                       XK_3,      spawn,          {.v = spotifycmd } },
+	{ ALTKEY,                       XK_4,      spawn,          {.v = asepritecmd } },
+	{ ALTKEY,                       XK_5,      spawn,          {.v = renoisecmd } },
+	{ ALTKEY,                       XK_6,      spawn,          {.v = chatgptcmd } },
 	{ MODKEY,                       XK_l,      spawn,          {.v = lockcmd } },
 	{ MODKEY|ShiftMask,             XK_s,      spawn,          {.v = screenshotcmd } },
 	{ 0,                            XK_Print,  spawn,          {.v = gnomeshotcmd } },
