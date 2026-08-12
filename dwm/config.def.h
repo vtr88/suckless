@@ -64,8 +64,7 @@ static const Rule rules[] = {
 	{ "Aseprite",     NULL,          NULL,       1 << 3,       0,           0,           -1 },
 	{ "tiled",        NULL,          NULL,       1 << 3,       1,           0,           -1 },
 	{ "Renoise",      NULL,          NULL,       1 << 4,       0,           0,           -1 },
-	{ "Code",         NULL,          NULL,       1 << 5,       0,           0,           -1 },
-	{ "VSCodium",     NULL,          NULL,       1 << 5,       0,           0,           -1 },
+	{ "Chatgpt",      NULL,          NULL,       1 << 5,       0,           0,           -1 },
 	{ "mpv",          NULL,          NULL,       0,            1,           0,           -1 },
 	{ "Gimp",         NULL,          NULL,       0,            1,           0,           -1 },
 };
@@ -110,6 +109,7 @@ static const char *firefoxcmd[]   = { "firefox-esr", NULL };
 static const char *spotifycmd[]   = { "/usr/bin/spotify", NULL };
 static const char *asepritecmd[]  = { "/usr/bin/aseprite", NULL };
 static const char *renoisecmd[]   = { "pw-jack", "renoise", NULL };
+static const char *chatgptcmd[]   = { "/usr/bin/chatgpt", NULL };
 static const char *lockcmd[]      = { "/usr/local/bin/slock", "/usr/bin/systemctl", "suspend", NULL };
 static const char *screenshotcmd[]= { "flameshot", "gui", NULL };
 static const char *gnomeshotcmd[] = { "gnome-screenshot", "-i", NULL };
@@ -177,6 +177,7 @@ static const Key keys[] = {
 	{ ALTKEY,                       XK_4,      spawn,          {.v = spotifycmd } },
 	{ ALTKEY,                       XK_5,      spawn,          {.v = asepritecmd } },
 	{ ALTKEY,                       XK_6,      spawn,          {.v = renoisecmd } },
+	{ ALTKEY,                       XK_7,      spawn,          {.v = chatgptcmd } },
 	{ MODKEY,                       XK_l,      spawn,          {.v = lockcmd } },
 	{ MODKEY|ShiftMask,             XK_s,      spawn,          {.v = screenshotcmd } },
 	{ 0,                            XK_Print,  spawn,          {.v = gnomeshotcmd } },
@@ -194,13 +195,6 @@ static const Key keys[] = {
 	{ ShiftMask|ALTKEY,             XK_Right,  tagrel,         {.i = +1 } },
 	{ ShiftMask|ALTKEY,             XK_Up,     tagrel,         {.i = -1 } },
 	{ ShiftMask|ALTKEY,             XK_Down,   tagrel,         {.i = +1 } },
-
-	{ MODKEY,                       XK_F1,     view,           {.ui = 1 << 0 } },
-	{ MODKEY,                       XK_F2,     view,           {.ui = 1 << 1 } },
-	{ MODKEY,                       XK_F3,     view,           {.ui = 1 << 2 } },
-	{ MODKEY,                       XK_F4,     view,           {.ui = 1 << 3 } },
-	{ MODKEY,                       XK_F5,     view,           {.ui = 1 << 4 } },
-	{ MODKEY,                       XK_F6,     view,           {.ui = 1 << 5 } },
 
 	{ ALTKEY,                       XK_F4,     killclient,     {0} },
 	{ ALTKEY,                       XK_Escape, lowerclient,    {0} },

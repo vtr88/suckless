@@ -395,6 +395,8 @@ appname(const char *class, const char *instance, const char *title)
 		return "aseprite";
 	if (strstr(class, "Renoise"))
 		return "renoise";
+	if (strstr(class, "Chatgpt"))
+		return "gepeto";
 	if (strstr(class, "Code") || strstr(class, "VSCodium"))
 		return "code";
 	if (strstr(class, "mpv"))
