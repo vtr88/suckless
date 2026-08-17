@@ -535,12 +535,6 @@ buttonpress(XEvent *e)
 		selmon = m;
 		focus(NULL);
 	}
-	if ((c = wintosystrayicon(ev->window))) {
-		sendevent(c->win, xatom[Xembed], StructureNotifyMask, CurrentTime,
-			XEMBED_WINDOW_ACTIVATE, 0, systray->win, XEMBED_EMBEDDED_VERSION);
-		XAllowEvents(dpy, ReplayPointer, CurrentTime);
-		return;
-	}
 	if (ev->window == selmon->barwin) {
 		i = x = 0;
 		do {
@@ -667,14 +661,6 @@ clientmessage(XEvent *e)
 			updatesizehints(c);
 			updatesystrayicongeom(c, wa.width, wa.height);
 			XAddToSaveSet(dpy, c->win);
-			/*
-			 * Alguns applets nao selecionam ButtonPress na propria janela
-			 * depois de serem reparentados. O grab passivo acorda o dwm,
-			 * que ativa o XEmbed e devolve o clique com ReplayPointer.
-			 */
-			XGrabButton(dpy, AnyButton, AnyModifier, c->win, True,
-				ButtonPressMask|ButtonReleaseMask, GrabModeSync, GrabModeAsync,
-				None, None);
 			XSelectInput(dpy, c->win, StructureNotifyMask|PropertyChangeMask|ResizeRedirectMask);
 			XReparentWindow(dpy, c->win, systray->win, 0, 0);
 			swa.background_pixel = scheme[SchemeNorm][ColBg].pixel;
