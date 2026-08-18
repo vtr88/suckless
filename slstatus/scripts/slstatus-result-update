@@ -1,0 +1,80 @@
+#!/usr/bin/python3
+
+"""Atualiza atomicamente o ultimo resultado do jogo do bicho do Rio."""
+
+from html.parser import HTMLParser
+import os
+from pathlib import Path
+import tempfile
+from urllib.request import Request, urlopen
+
+URL = "https://www.eojogodobicho.com/widget/rio?format=bar"
+ANIMALS = (
+    ("avestruz", "🦤"), ("águia", "🦅"), ("burro", "🫏"),
+    ("borboleta", "🦋"), ("cachorro", "🐕"), ("cabra", "🐐"),
+    ("carneiro", "🐏"), ("camelo", "🐫"), ("cobra", "🐍"),
+    ("coelho", "🐇"), ("cavalo", "🐎"), ("elefante", "🐘"),
+    ("galo", "🐓"), ("gato", "🐈"), ("jacaré", "🐊"),
+    ("leão", "🦁"), ("macaco", "🐒"), ("porco", "🐖"),
+    ("pavão", "🦚"), ("peru", "🦃"), ("touro", "🐂"),
+    ("tigre", "🐅"), ("urso", "🐻"), ("veado", "🦌"),
+    ("vaca", "🐄"),
+)
+
+
+class WidgetParser(HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self.current = None
+        self.values = {"s": "", "m": "", "b": ""}
+
+    def handle_starttag(self, tag, attrs):
+        if tag != "span":
+            return
+        classes = dict(attrs).get("class", "").split()
+        self.current = next((name for name in self.values if name in classes), None)
+
+    def handle_endtag(self, tag):
+        if tag == "span":
+            self.current = None
+
+    def handle_data(self, data):
+        if self.current:
+            self.values[self.current] += data
+
+
+def main():
+    request = Request(URL, headers={"User-Agent": "slstatus-result/1.0"})
+    with urlopen(request, timeout=10) as response:
+        parser = WidgetParser()
+        parser.feed(response.read().decode("utf-8"))
+
+    draw = parser.values["s"].strip()
+    milhar = parser.values["m"].strip()
+    site_animal = parser.values["b"].strip().casefold()
+    if not draw or len(milhar) != 4 or not milhar.isdigit() or not site_animal:
+        raise ValueError("resultado incompleto no widget")
+
+    last_two = int(milhar[-2:])
+    group = ((last_two - 1) % 100) // 4 + 1
+    animal, emoji = ANIMALS[group - 1]
+    if site_animal != animal.casefold():
+        raise ValueError(
+            f"resultado inconsistente: {milhar} indica {animal}, site informa {site_animal}"
+        )
+
+    cache_dir = Path(os.environ.get("XDG_CACHE_HOME", Path.home() / ".cache")) / "slstatus"
+    cache_dir.mkdir(parents=True, exist_ok=True)
+    destination = cache_dir / "result.txt"
+    output = f"{group:02d} {animal} {emoji} 🇧🇷\n"
+
+    with tempfile.NamedTemporaryFile(
+        "w", encoding="utf-8", dir=cache_dir, prefix=".result.", delete=False
+    ) as temporary:
+        temporary.write(output)
+        temporary_path = Path(temporary.name)
+    os.replace(temporary_path, destination)
+
+
+if __name__ == "__main__":
+    main()

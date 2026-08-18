@@ -59,6 +59,7 @@
 
 /* Constantes XEmbed usadas pela systray embutida. */
 #define SYSTEM_TRAY_REQUEST_DOCK    0
+#define SYSTEM_TRAY_ORIENTATION_HORZ 0
 #define XEMBED_EMBEDDED_NOTIFY      0
 #define XEMBED_WINDOW_ACTIVATE      1
 #define XEMBED_WINDOW_DEACTIVATE    2
@@ -79,7 +80,7 @@ enum {
 	SchemeTagNumSel
 }; /* color schemes */
 enum { NetSupported, NetWMName, NetWMState, NetWMCheck,
-       NetSystemTray, NetSystemTrayOP, NetSystemTrayOrientation, NetSystemTrayOrientationHorz,
+       NetSystemTray, NetSystemTrayOP, NetSystemTrayOrientation,
        NetWMFullscreen, NetActiveWindow, NetWMWindowType,
        NetWMWindowTypeDialog, NetClientList, NetLast }; /* EWMH atoms */
 enum { Manager, Xembed, XembedInfo, XLast }; /* Xembed atoms */
@@ -1947,7 +1948,6 @@ setup(void)
 	netatom[NetSystemTray] = XInternAtom(dpy, "_NET_SYSTEM_TRAY_S0", False);
 	netatom[NetSystemTrayOP] = XInternAtom(dpy, "_NET_SYSTEM_TRAY_OPCODE", False);
 	netatom[NetSystemTrayOrientation] = XInternAtom(dpy, "_NET_SYSTEM_TRAY_ORIENTATION", False);
-	netatom[NetSystemTrayOrientationHorz] = XInternAtom(dpy, "_NET_SYSTEM_TRAY_ORIENTATION_HORZ", False);
 	netatom[NetWMName] = XInternAtom(dpy, "_NET_WM_NAME", False);
 	netatom[NetWMState] = XInternAtom(dpy, "_NET_WM_STATE", False);
 	netatom[NetWMCheck] = XInternAtom(dpy, "_NET_SUPPORTING_WM_CHECK", False);
@@ -2539,7 +2539,7 @@ updatesystray(void)
 		wa.background_pixel = scheme[SchemeNorm][ColBg].pixel;
 		XSelectInput(dpy, systray->win, SubstructureNotifyMask);
 		XChangeProperty(dpy, systray->win, netatom[NetSystemTrayOrientation], XA_CARDINAL, 32,
-			PropModeReplace, (unsigned char *)&netatom[NetSystemTrayOrientationHorz], 1);
+			PropModeReplace, (unsigned char *)&(unsigned long){SYSTEM_TRAY_ORIENTATION_HORZ}, 1);
 		XChangeWindowAttributes(dpy, systray->win, CWEventMask|CWOverrideRedirect|CWBackPixel, &wa);
 		XMapRaised(dpy, systray->win);
 		XSetSelectionOwner(dpy, netatom[NetSystemTray], systray->win, CurrentTime);

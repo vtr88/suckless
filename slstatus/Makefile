@@ -8,6 +8,7 @@ REQ = util
 SCRIPTS =\
 	scripts/slstatus-psu\
 	scripts/slstatus-result\
+	scripts/slstatus-result-update\
 	scripts/slstatus-treino\
 	scripts/slstatus-weather\
 	scripts/slstatus-year
@@ -76,6 +77,7 @@ uninstall:
 	rm -f "$(DESTDIR)$(PREFIX)/bin/slstatus"
 	rm -f "$(DESTDIR)$(PREFIX)/bin/slstatus-psu"
 	rm -f "$(DESTDIR)$(PREFIX)/bin/slstatus-result"
+	rm -f "$(DESTDIR)$(PREFIX)/bin/slstatus-result-update"
 	rm -f "$(DESTDIR)$(PREFIX)/bin/slstatus-treino"
 	rm -f "$(DESTDIR)$(PREFIX)/bin/slstatus-weather"
 	rm -f "$(DESTDIR)$(PREFIX)/bin/slstatus-year"
