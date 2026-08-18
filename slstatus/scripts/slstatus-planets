@@ -1,0 +1,118 @@
+#!/usr/bin/python3
+
+"""Mostra os regentes planetarios do dia e da hora em Tanabi."""
+
+from datetime import datetime, time, timedelta, timezone
+import math
+from zoneinfo import ZoneInfo
+
+LATITUDE = -20.6251635
+LONGITUDE = -49.6519879
+ZONE = ZoneInfo("America/Sao_Paulo")
+ZENITH = 90.833
+
+# Ordem caldaica usada pelas horas planetarias.
+ORDER = ("saturn", "jupiter", "mars", "sun", "venus", "mercury", "moon")
+DAY_RULER = ("moon", "mars", "mercury", "jupiter", "venus", "saturn", "sun")
+
+# Runa-simbolo, nome grego, romano e germanico/nordico.
+# Freyr como Saturno e a interpretatio vitor hugoquica.
+PLANETS = {
+    "saturn": ("ᛝ", "Κρόνος", "Saturnus", "Freyr"),
+    "jupiter": ("ᚦ", "Ζεύς", "Iuppiter", "Þórr"),
+    "mars": ("ᛏ", "Ἄρης", "Mars", "Týr"),
+    "sun": ("ᛊ", "Ἥλιος", "Sol", "Sól"),
+    "venus": ("ᚠ", "Ἀφροδίτη", "Venus", "Frigg"),
+    "mercury": ("ᚨ", "Ἑρμῆς", "Mercurius", "Óðinn"),
+    "moon": ("ᛗ", "Σελήνη", "Luna", "Máni"),
+}
+
+
+def solar_event(day, sunrise):
+    """Calcula nascer ou por do Sol pelo algoritmo simplificado da NOAA."""
+    day_number = day.timetuple().tm_yday
+    longitude_hour = LONGITUDE / 15.0
+    approximate = day_number + (
+        (6.0 - longitude_hour) / 24.0
+        if sunrise
+        else (18.0 - longitude_hour) / 24.0
+    )
+
+    mean_anomaly = 0.9856 * approximate - 3.289
+    true_longitude = (
+        mean_anomaly
+        + 1.916 * math.sin(math.radians(mean_anomaly))
+        + 0.020 * math.sin(math.radians(2 * mean_anomaly))
+        + 282.634
+    ) % 360.0
+
+    right_ascension = math.degrees(
+        math.atan(0.91764 * math.tan(math.radians(true_longitude)))
+    ) % 360.0
+    longitude_quadrant = math.floor(true_longitude / 90.0) * 90.0
+    ascension_quadrant = math.floor(right_ascension / 90.0) * 90.0
+    right_ascension = (right_ascension + longitude_quadrant - ascension_quadrant) / 15.0
+
+    sin_declination = 0.39782 * math.sin(math.radians(true_longitude))
+    cos_declination = math.cos(math.asin(sin_declination))
+    cosine_hour = (
+        math.cos(math.radians(ZENITH))
+        - sin_declination * math.sin(math.radians(LATITUDE))
+    ) / (cos_declination * math.cos(math.radians(LATITUDE)))
+
+    if not -1.0 <= cosine_hour <= 1.0:
+        raise ValueError("nascer ou por do Sol indisponivel nesta latitude")
+
+    hour_angle = math.degrees(math.acos(cosine_hour))
+    if sunrise:
+        hour_angle = 360.0 - hour_angle
+    hour_angle /= 15.0
+
+    local_mean_time = (
+        hour_angle + right_ascension - 0.06571 * approximate - 6.622
+    )
+    utc_hour = (local_mean_time - longitude_hour) % 24.0
+    utc_midnight = datetime.combine(day, time(), tzinfo=timezone.utc)
+    return (utc_midnight + timedelta(hours=utc_hour)).astimezone(ZONE)
+
+
+def planetary_hour(now):
+    today = now.date()
+    sunrise = solar_event(today, True)
+    sunset = solar_event(today, False)
+
+    if sunrise <= now < sunset:
+        planetary_day = today
+        interval_start = sunrise
+        interval_length = (sunset - sunrise) / 12
+        hour_number = int((now - interval_start) / interval_length)
+    elif now >= sunset:
+        planetary_day = today
+        next_sunrise = solar_event(today + timedelta(days=1), True)
+        interval_start = sunset
+        interval_length = (next_sunrise - sunset) / 12
+        hour_number = 12 + int((now - interval_start) / interval_length)
+    else:
+        planetary_day = today - timedelta(days=1)
+        previous_sunset = solar_event(planetary_day, False)
+        interval_start = previous_sunset
+        interval_length = (sunrise - previous_sunset) / 12
+        hour_number = 12 + int((now - interval_start) / interval_length)
+
+    hour_number = min(hour_number, 23)
+    day_planet = DAY_RULER[planetary_day.weekday()]
+    hour_planet = ORDER[(ORDER.index(day_planet) + hour_number) % len(ORDER)]
+    return hour_planet
+
+
+def main():
+    now = datetime.now(ZONE)
+    hour_planet = planetary_hour(now)
+    tradition = (now.second // 4) % 3 + 1
+
+    hour_names = PLANETS[hour_planet]
+    print(f"{hour_names[0]} {hour_names[tradition]}")
+
+
+if __name__ == "__main__":
+    main()

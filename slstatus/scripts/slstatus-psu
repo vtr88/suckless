@@ -4,7 +4,7 @@
 # Para evitar "n/a" piscando na barra, guardamos o ultimo valor valido.
 cache="${XDG_CACHE_HOME:-$HOME/.cache}/slstatus-psu"
 
-out=$(/usr/bin/psuinfo -CgMk -N 2>/dev/null)
+out=$(/usr/bin/psuinfo -CgM 2>/dev/null)
 if [ -n "$out" ]; then
 	printf '%s\n' "$out" > "$cache"
 	printf '%s\n' "$out"

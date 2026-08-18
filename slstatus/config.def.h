@@ -75,7 +75,9 @@ static const struct arg args[] = {
 	 * Os marcadores ^c#rrggbb^ e ^d^ sao interpretados pelo patch local
 	 * do dwm. No terminal eles aparecem literais; na barra viram cores.
 	 */
-	/* psuinfo: memoria/rede/carga visual. O helper guarda ultimo valor bom. */
+	/* Regente da hora planetaria; nomes giram em 4 s. */
+	{ run_command, "^c#fabd2f^%s^d^  ", "/usr/local/bin/slstatus-planets" },
+	/* psuinfo: memoria/carga visual. O helper guarda ultimo valor bom. */
 	{ run_command, "^c#edbd4f^%s^d^  ", "/usr/local/bin/slstatus-psu" },
 	/* Treino atual, sem markup pango vindo do comando original. */
 	{ run_command, "^c#bdca58^%s^d^  ", "/usr/local/bin/slstatus-treino" },
@@ -86,7 +88,7 @@ static const struct arg args[] = {
 	/* Progresso anual contado a partir de 11/03, como no setup antigo. */
 	{ run_command, "^c#d2a442^◷ %s^d^  ", "/usr/local/bin/slstatus-year" },
 	/* Bateria local detectada como BAT1 neste notebook. */
-	{ battery_perc, "^c#ff9f3f^bat %s%%^d^  ", "BAT1" },
+	{ battery_perc, "^c#ff9f3f^🔋 %s%%^d^  ", "BAT1" },
 	/* Relogio completo; pode ser encurtado se a barra ficar apertada. */
 	{ datetime, "^c#ebdbb2^%s^d^", "%c" },
 };

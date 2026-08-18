@@ -19,7 +19,7 @@ static const int showsystray        = 1;
 static const int showbar            = 1;
 static const int topbar             = 0;
 /* Fonte mais pesada para legibilidade e fallback para emoji/glyphs do status. */
-static const char *fonts[]          = { "Noto Sans:style=Bold:size=10", "Noto Color Emoji:size=10" };
+static const char *fonts[]          = { "Noto Sans:style=Bold:size=10", "Noto Sans Runic:size=10", "Noto Color Emoji:size=10" };
 static const char dmenufont[]       = "Roboto:size=9";
 static const char col_gray1[]       = "#2e2821";
 static const char col_gray2[]       = "#4b4d3b";
