@@ -404,6 +404,10 @@ appname(const char *class, const char *instance, const char *title)
 		return "renoise";
 	if (strstr(class, "Chatgpt"))
 		return "gepeto";
+    if (strstr(class, "dwarfort"))
+		return "dwarfs";
+    if (strstr(class, "fastpotify"))
+		return "faspotify";
 	if (strstr(class, "Code") || strstr(class, "VSCodium"))
 		return "code";
 	if (strstr(class, "mpv"))
