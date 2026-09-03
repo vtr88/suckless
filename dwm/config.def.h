@@ -61,6 +61,7 @@ static const Rule rules[] = {
 	{ "Alacritty",    NULL,          NULL,       1 << 0,       0,           0,           -1 },
 	{ "firefox-esr",  NULL,          NULL,       1 << 1,       0,           0,           -1 },
 	{ "Spotify",      NULL,          NULL,       1 << 2,       1,           0,           -1 },
+	{ "fastpotify",   NULL,          NULL,       1 << 2,       1,           0,           -1 },
 	{ "Aseprite",     NULL,          NULL,       1 << 3,       0,           0,           -1 },
 	{ "tiled",        NULL,          NULL,       1 << 3,       1,           0,           -1 },
 	{ "Renoise",      NULL,          NULL,       1 << 4,       0,           0,           -1 },
@@ -108,15 +109,19 @@ static const char *dmenucmd[]     = { "/usr/local/bin/dmenu_run", "-i", "-m", dm
 static const char *termcmd[]      = { "/usr/local/bin/st", "-e", "tmux", NULL };
 static const char *firefoxcmd[]   = { "firefox-esr", NULL };
 static const char *spotifycmd[]   = { "/usr/bin/spotify", NULL };
+static const char *faspotifycmd[] = { "/usr/local/bin/fasspotify", NULL };
 static const char *asepritecmd[]  = { "/usr/bin/aseprite", NULL };
 static const char *renoisecmd[]   = { "pw-jack", "renoise", NULL };
 static const char *chatgptcmd[]   = { "/usr/bin/chatgpt", NULL };
-static const Launcher termlauncher     = { "st-256color", termcmd };
-static const Launcher firefoxlauncher  = { "firefox-esr", firefoxcmd };
-static const Launcher spotifylauncher  = { "Spotify", spotifycmd };
-static const Launcher asepritelauncher = { "Aseprite", asepritecmd };
-static const Launcher renoiselauncher  = { "Renoise", renoisecmd };
-static const Launcher chatgptlauncher  = { "Chatgpt", chatgptcmd };
+static const char *dwarfcmd[]     = { "/usr/local/bin/dwarf", NULL };
+static const Launcher termlauncher      = { "st-256color", termcmd };
+static const Launcher firefoxlauncher   = { "firefox-esr", firefoxcmd };
+static const Launcher spotifylauncher   = { "Spotify", spotifycmd };
+static const Launcher faspotifylauncher = { "faspotify", faspotifycmd };
+static const Launcher dwarflauncher     = { "dwarf", dwarfcmd };
+static const Launcher asepritelauncher  = { "Aseprite", asepritecmd };
+static const Launcher renoiselauncher   = { "Renoise", renoisecmd };
+static const Launcher chatgptlauncher   = { "Chatgpt", chatgptcmd };
 static const char *lockcmd[]      = { "/usr/local/bin/slock", "/usr/bin/systemctl", "suspend", NULL };
 static const char *screenshotcmd[]= { "flameshot", "gui", NULL };
 static const char *gnomeshotcmd[] = { "gnome-screenshot", "-i", NULL };
