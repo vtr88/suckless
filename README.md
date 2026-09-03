@@ -35,7 +35,17 @@ menos:
         libglib2.0-dev \
         libxtst-dev \
         xdotool \
-        fonts-firacode
+        curl \
+        python3 \
+        python3-psutil \
+        pipewire-jack \
+        tmux \
+        flameshot \
+        gnome-screenshot \
+        fonts-firacode \
+        fonts-noto-core \
+        fonts-noto-color-emoji \
+        fonts-roboto
 
 O que cada grupo cobre:
 
@@ -50,7 +60,19 @@ O que cada grupo cobre:
 - `libglib2.0-dev`: headers GLib usados pelo `keynav`.
 - `libxtst-dev` e `xdotool`: dependencias ligadas ao controle de mouse/teclado
   do `keynav`.
-- `fonts-firacode`: fonte usada no meu `st`, `dmenu` e barra do `dwm`.
+- `curl`, `python3` e `python3-psutil`: scripts auxiliares do `slstatus`.
+- `pipewire-jack`: inicia o Renoise integrado ao PipeWire.
+- `tmux`: sessao aberta automaticamente pelo atalho de terminal do `dwm`.
+- `flameshot` e `gnome-screenshot`: atalhos de captura de tela do `dwm`.
+- `fonts-firacode`: fonte usada no `st`.
+- `fonts-noto-core`, `fonts-noto-color-emoji` e `fonts-roboto`: fontes e
+  simbolos usados pela barra do `dwm` e pelo `dmenu`.
+
+Alguns itens exibidos na barra dependem de comandos pessoais que nao fazem
+parte deste repositorio: `/usr/bin/psuinfo` e `/usr/local/bin/treino-show`.
+Sem eles, o restante do ambiente continua funcionando, mas esses segmentos do
+`slstatus` ficam vazios. Spotify, Fastpotify, Aseprite, Renoise, ChatGPT e
+DwarFort tambem sao aplicativos opcionais chamados ou organizados pelo `dwm`.
 
 Os dotfiles e servicos de sessao ficam em outro repositorio:
 
