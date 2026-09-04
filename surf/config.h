@@ -7,9 +7,9 @@ static char *styledir       = DATAPREFIX "/styles/";
 static char *certdir        = "~/.surf/certificates/";
 static char *cachedir       = "~/.surf/cache/";
 static char *cookiefile     = "~/.surf/cookies.txt";
-static char *zoomdir        = "~/.config/surf/zoom/";
+static char *zoomdir        = "~/.surf/zoom/";
 static char *filterfile     = DATAPREFIX "/filters/adblock.json";
-static char *filterdir      = "~/.cache/surf/content-filters/";
+static char *filterdir      = "~/.surf/content-filters/";
 
 /* Webkit default features */
 /* Highest priority value will be used.
@@ -54,6 +54,9 @@ static Parameter defconfig[ParameterLast] = {
 };
 
 static UriParameters uriparams[] = {
+	{ "(://|\\.)web\\.whatsapp\\.com(/|$)", {
+	  [FontSize] = { { .i = 16 }, 1 },
+	}, },
 	{ "(://|\\.)suckless\\.org(/|$)", {
 	  [JavaScript] = { { .i = 0 }, 1 },
 	}, },
@@ -118,11 +121,21 @@ static WebKitFindOptions findopts = WEBKIT_FIND_OPTIONS_CASE_INSENSITIVE |
 }
 
 /* styles */
-static SiteSpecific styles[] = {
-	/* regexp               file in $styledir */
-	{ ".*",                 "cookies.css" },
-	{ "(://|\\.)lichess\\.org(/|$)", "lichess.css" },
-	{ "(://|\\.)last\\.fm(/|$)",     "lastfm.css" },
+static const char *const cookieblockhosts[] = {
+	"web.whatsapp.com",
+	"lichess.org",
+	"last.fm",
+	"astraios",
+	"news.ycombinator.com",
+	"youtube.com",
+	NULL,
+};
+
+static SiteStyle styles[] = {
+	/* regexp               file in $styledir  blocked hosts       frames */
+	{ ".*",                 "cookies.css", cookieblockhosts, WEBKIT_USER_CONTENT_INJECT_TOP_FRAME },
+	{ "(://|\\.)lichess\\.org(/|$)", "lichess.css", NULL, WEBKIT_USER_CONTENT_INJECT_TOP_FRAME },
+	{ "(://|\\.)last\\.fm(/|$)",     "lastfm.css", NULL, WEBKIT_USER_CONTENT_INJECT_TOP_FRAME },
 };
 
 /* certificates */
@@ -148,7 +161,8 @@ static Key keys[] = {
 	{ MODKEY,                GDK_KEY_slash,  spawn,      SETPROP("_SURF_FIND", "_SURF_FIND", PROMPT_FIND) },
 
 	{ 0,                     GDK_KEY_Escape, stop,       { 0 } },
-	{ MODKEY,                GDK_KEY_c,      stop,       { 0 } },
+	{ MODKEY,                GDK_KEY_c,      edit,       { .v = WEBKIT_EDITING_COMMAND_COPY } },
+	{ MODKEY,                GDK_KEY_v,      edit,       { .v = WEBKIT_EDITING_COMMAND_PASTE } },
 
 	{ MODKEY|GDK_SHIFT_MASK, GDK_KEY_r,      reload,     { .i = 1 } },
 	{ MODKEY,                GDK_KEY_r,      reload,     { .i = 0 } },

@@ -29,7 +29,7 @@ else
 fi
 
 runtime_dir=${XDG_RUNTIME_DIR:-/tmp}
-state_dir=${XDG_STATE_HOME:-$HOME/.local/state}/surf
+state_dir=$HOME/.surf
 xidfile=$runtime_dir/surf-tabbed-$(id -u).xid
 lockdir=$runtime_dir/surf-session-$(id -u).lock
 statefile=$state_dir/session

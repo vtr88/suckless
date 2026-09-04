@@ -11,8 +11,7 @@ case $line in
 	*) exit 2 ;;
 esac
 
-config_dir=${XDG_CONFIG_HOME:-$HOME/.config}/surf
-bookmarks=${SURF_BOOKMARKS_FILE:-$config_dir/bookmarks}
+bookmarks=${SURF_BOOKMARKS_FILE:-$HOME/.surf/bookmarks}
 [ -r "$bookmarks" ] || exit 0
 
 uri=$(sed -n "${line}p" "$bookmarks" |

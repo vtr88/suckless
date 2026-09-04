@@ -121,7 +121,7 @@ Para iniciar ou focar a sessao pessoal:
 
 No primeiro uso, o navegador abre uma unica pagina vazia. Depois disso, o
 `surf-session` salva continuamente as abas abertas e sua ordem em
-`~/.local/state/surf/session`, restaura a ultima sessao e ignora arquivos XID
+`~/.surf/session`, restaura a ultima sessao e ignora arquivos XID
 obsoletos. Uma segunda chamada apenas reutiliza e foca a janela existente.
 Tambem e possivel fornecer uma lista explicita de URLs ao `surf-session`.
 
@@ -143,11 +143,11 @@ Controles principais:
 - `Ctrl-q`: fechar a aba atual.
 - clique do meio em um link: abrir o link em uma nova aba.
 
-O nivel de zoom e salvo por dominio em `~/.config/surf/zoom/`. `Ctrl-+` aumenta,
+O nivel de zoom e salvo por dominio em `~/.surf/zoom/`. `Ctrl-+` aumenta,
 `Ctrl--` diminui e `Ctrl-Shift-q` volta a 100%; ao retornar ao mesmo dominio,
 o ultimo nivel usado e reaplicado automaticamente.
 
-Os bookmarks ficam em `~/.config/surf/bookmarks`, com uma URL por linha.
+Os bookmarks ficam em `~/.surf/bookmarks`, com uma URL por linha.
 `Ctrl-Shift-1` ate `Ctrl-Shift-9` abrem as linhas 1 a 9 em uma nova aba;
 `Ctrl-Shift-0` abre a linha 10. Linhas vazias e linhas iniciadas por `#` nao
 abrem nada, mas continuam contando para a numeracao.
@@ -170,7 +170,7 @@ todo aviso existente. A procedencia e a licenca GPL ficam em
 
 Anuncios e rastreadores comuns sao bloqueados antes do download pelo filtro de
 conteudo nativo do WebKitGTK, definido em `surf/filters/adblock.json`. A copia
-compilada fica em `~/.cache/surf/content-filters/` e e renovada automaticamente
+compilada fica em `~/.surf/content-filters/` e e renovada automaticamente
 quando o arquivo instalado muda. A lista e deliberadamente conservadora para
 nao comprometer logins, WhatsApp Web, Lichess ou reproducao no YouTube.
 

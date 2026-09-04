@@ -145,6 +145,14 @@ typedef struct {
 } SiteSpecific;
 
 typedef struct {
+	char *regex;
+	char *file;
+	const char *const *blockhosts;
+	WebKitUserContentInjectedFrames frames;
+	regex_t re;
+} SiteStyle;
+
+typedef struct {
 	const char *uri;
 	const char *title;
 } UriTitle;
@@ -183,8 +191,10 @@ static void loadzoom(Client *c);
 static void savezoom(Client *c);
 static const char *getcert(const char *uri);
 static void setcert(Client *c, const char *file);
+static int urihostblocked(const char *uri, const char *const *blockhosts);
 static void setstyles(Client *c);
-static void setstyle(Client *c, const char *file);
+static void setstyle(Client *c, const char *file,
+                     WebKitUserContentInjectedFrames frames);
 static void loadcontentfilter(WebKitUserContentManager *contentmanager);
 static void contentfilterloaded(GObject *source, GAsyncResult *result,
                                 gpointer data);
@@ -247,6 +257,7 @@ static void reload(Client *c, const Arg *a);
 static void print(Client *c, const Arg *a);
 static void showcert(Client *c, const Arg *a);
 static void clipboard(Client *c, const Arg *a);
+static void edit(Client *c, const Arg *a);
 static void zoom(Client *c, const Arg *a);
 static void scrollv(Client *c, const Arg *a);
 static void scrollh(Client *c, const Arg *a);
@@ -1018,6 +1029,43 @@ setcert(Client *c, const char *uri)
 
 }
 
+int
+urihostblocked(const char *uri, const char *const *blockhosts)
+{
+	GUri *parsed;
+	const char *host;
+	size_t hostlen, blocklen;
+	int i, blocked = 0;
+
+	if (!blockhosts)
+		return 0;
+
+	parsed = g_uri_parse(uri, G_URI_FLAGS_PARSE_RELAXED, NULL);
+	if (!parsed)
+		return 0;
+
+	host = g_uri_get_host(parsed);
+	if (!host || !*host) {
+		blocked = 1;
+	} else {
+		hostlen = strlen(host);
+		for (i = 0; blockhosts[i]; ++i) {
+			blocklen = strlen(blockhosts[i]);
+			if (!g_ascii_strcasecmp(host, blockhosts[i]) ||
+			    (hostlen > blocklen &&
+			     host[hostlen - blocklen - 1] == '.' &&
+			     !g_ascii_strcasecmp(host + hostlen - blocklen,
+			                         blockhosts[i]))) {
+				blocked = 1;
+				break;
+			}
+		}
+	}
+
+	g_uri_unref(parsed);
+	return blocked;
+}
+
 void
 setstyles(Client *c)
 {
@@ -1025,19 +1073,21 @@ setstyles(Client *c)
 	const char *uri = geturi(c);
 
 	if (stylefile) {
-		setstyle(c, stylefile);
+		setstyle(c, stylefile, WEBKIT_USER_CONTENT_INJECT_ALL_FRAMES);
 		return;
 	}
 
 	for (i = 0; i < LENGTH(styles); ++i) {
 		if (styles[i].regex &&
-		    !regexec(&(styles[i].re), uri, 0, NULL, 0))
-			setstyle(c, styles[i].file);
+		    !regexec(&(styles[i].re), uri, 0, NULL, 0) &&
+		    !urihostblocked(uri, styles[i].blockhosts))
+			setstyle(c, styles[i].file, styles[i].frames);
 	}
 }
 
 void
-setstyle(Client *c, const char *file)
+setstyle(Client *c, const char *file,
+    WebKitUserContentInjectedFrames frames)
 {
 	gchar *style;
 
@@ -1049,7 +1099,7 @@ setstyle(Client *c, const char *file)
 	webkit_user_content_manager_add_style_sheet(
 	    webkit_web_view_get_user_content_manager(c->view),
 	    webkit_user_style_sheet_new(style,
-	    WEBKIT_USER_CONTENT_INJECT_ALL_FRAMES,
+	    frames,
 	    WEBKIT_USER_STYLE_LEVEL_USER,
 	    NULL, NULL));
 
@@ -1070,7 +1120,8 @@ runscriptfile(Client *c, const char *file)
 void
 runscript(Client *c)
 {
-	runscriptfile(c, cookiesscript);
+	if (!urihostblocked(geturi(c), cookieblockhosts))
+		runscriptfile(c, cookiesscript);
 	runscriptfile(c, scriptfile);
 }
 
@@ -2013,15 +2064,25 @@ showcert(Client *c, const Arg *a)
 void
 clipboard(Client *c, const Arg *a)
 {
+	const char *uri;
+
 	if (a->i) { /* load clipboard uri */
 		gtk_clipboard_request_text(gtk_clipboard_get(
 		                           GDK_SELECTION_PRIMARY),
 		                           pasteuri, c);
 	} else { /* copy uri */
+		uri = geturi(c);
 		gtk_clipboard_set_text(gtk_clipboard_get(
-		                       GDK_SELECTION_PRIMARY), c->targeturi
-		                       ? c->targeturi : geturi(c), -1);
+		                       GDK_SELECTION_PRIMARY), uri, -1);
+		gtk_clipboard_set_text(gtk_clipboard_get(
+		                       GDK_SELECTION_CLIPBOARD), uri, -1);
 	}
+}
+
+void
+edit(Client *c, const Arg *a)
+{
+	webkit_web_view_execute_editing_command(c->view, a->v);
 }
 
 void

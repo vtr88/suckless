@@ -3,6 +3,25 @@
 /*  Use this handler if the cookie warning is used on a lot of websites */
 
 (function () {
+  const hostname = window.location.hostname.toLowerCase().replace(/\.$/, "");
+  const excludedHosts = [
+    "web.whatsapp.com",
+    "lichess.org",
+    "last.fm",
+    "news.ycombinator.com",
+    "youtube.com",
+  ];
+
+  if (
+    !hostname ||
+    hostname === "astraios" ||
+    excludedHosts.some(function (host) {
+      return hostname === host || hostname.endsWith("." + host);
+    })
+  ) {
+    return;
+  }
+
   const searchPairs = {
     ".if6_eprivacy": [".ebutton > a[data-form*='eprivacy_optin_decline']"],
 
@@ -510,11 +529,13 @@
   const searchGroupsLength = searchGroups.length;
   const searchPairsKeys = Object.keys(searchPairs);
   const searchPairsJoinedKeys = searchPairsKeys.join(",");
+  const searchRounds = 3;
+  const searchDelay = 750;
   let timeoutDuration = 0;
 
   function searchLoop(counter) {
     setTimeout(function () {
-      timeoutDuration = 50;
+      timeoutDuration = searchDelay;
       document.querySelectorAll(searchPairsJoinedKeys).forEach(function (box) {
         searchPairsKeys.forEach(function (selector) {
           if (box.matches(selector)) {
@@ -586,21 +607,17 @@
           }
         });
 
-      if (counter < 100 * searchGroupsLength) {
+      if (counter + 1 < searchRounds * searchGroupsLength) {
         searchLoop(counter + 1);
       }
     }, timeoutDuration);
   }
 
-  const start = setInterval(function () {
-    const html = document.querySelector("html");
+  const html = document.documentElement;
+  if (!html || html.classList.contains("idc0_343")) {
+    return;
+  }
 
-    if (!html || /idc0_343/.test(html.className)) {
-      return;
-    }
-
-    html.className += " idc0_343";
-    searchLoop(0);
-    clearInterval(start);
-  }, 250);
+  html.classList.add("idc0_343");
+  searchLoop(0);
 })();

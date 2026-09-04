@@ -3,8 +3,9 @@ extension id: idcac-pub@guus.ninja
 version: 1.1.9
 source package sha256: 42922f61cfc53e2103e492ddbe5736caf503d9dad4a88690efc4c64dac10d5c7
 
-Imported files:
-- data/css/common.css -> styles/cookies.css
-- data/js/0_defaultClickHandler.js -> scripts/cookies.js
+Locally reduced derivatives:
+- data/css/common.css -> styles/cookies.css (common CMPs only)
+- data/js/0_defaultClickHandler.js -> scripts/cookies.js (bounded scanning and
+  permanent-site exclusions)
 
 License: GPL-3.0-or-later (see LICENSE)

@@ -85,6 +85,8 @@ typedef struct {
 	int tabx;
 	Bool urgent;
 	Bool closed;
+	Bool hidden;
+	unsigned int ignoreunmap;
 } Client;
 
 /* function declarations */
@@ -446,6 +448,7 @@ void
 focus(int c)
 {
 	char buf[BUFSIZ] = "tabbed-"VERSION" ::";
+	int oldsel;
 	size_t i, n;
 	XWMHints* wmh;
 	XWMHints* win_wmh;
@@ -465,15 +468,35 @@ focus(int c)
 	if (c < 0 || c >= nclients)
 		return;
 
+	oldsel = sel;
+	if (oldsel >= 0 && oldsel < nclients && oldsel != c) {
+		sendxembed(oldsel, XEMBED_FOCUS_OUT, 0, 0, 0);
+		sendxembed(oldsel, XEMBED_WINDOW_DEACTIVATE, 0, 0, 0);
+	}
+
+	for (i = 0; i < (size_t)nclients; i++) {
+		if ((int)i == c || clients[i]->hidden)
+			continue;
+		clients[i]->hidden = True;
+		clients[i]->ignoreunmap++;
+		XUnmapWindow(dpy, clients[i]->win);
+	}
+
 	resize(c, ww, wh - bh);
-	XRaiseWindow(dpy, clients[c]->win);
+	if (clients[c]->hidden) {
+		clients[c]->hidden = False;
+		XMapRaised(dpy, clients[c]->win);
+	} else {
+		XRaiseWindow(dpy, clients[c]->win);
+	}
 	XSetInputFocus(dpy, clients[c]->win, RevertToParent, CurrentTime);
 	sendxembed(c, XEMBED_FOCUS_IN, XEMBED_FOCUS_CURRENT, 0, 0);
 	sendxembed(c, XEMBED_WINDOW_ACTIVATE, 0, 0, 0);
 	xsettitle(win, clients[c]->name);
 
 	if (sel != c) {
-		lastsel = sel;
+		if (sel >= 0 && sel < nclients)
+			lastsel = sel;
 		sel = c;
 	}
 
@@ -722,8 +745,7 @@ manage(Window w)
 
 		XWithdrawWindow(dpy, w, 0);
 		XReparentWindow(dpy, w, win, 0, bh);
-		XSelectInput(dpy, w, PropertyChangeMask |
-		             StructureNotifyMask | EnterWindowMask);
+		XSelectInput(dpy, w, PropertyChangeMask | EnterWindowMask);
 		XSync(dpy, False);
 
 		for (i = 0; i < LENGTH(keys); i++) {
@@ -1230,8 +1252,15 @@ unmapnotify(const XEvent *e)
 	const XUnmapEvent *ev = &e->xunmap;
 	int c;
 
-	if ((c = getclient(ev->window)) > -1)
-		unmanage(c);
+	if ((c = getclient(ev->window)) < 0)
+		return;
+
+	if (clients[c]->ignoreunmap) {
+		clients[c]->ignoreunmap--;
+		return;
+	}
+
+	unmanage(c);
 }
 
 void
