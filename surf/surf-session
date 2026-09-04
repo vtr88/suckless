@@ -1,0 +1,193 @@
+#!/bin/sh
+
+set -eu
+
+foreground=0
+if [ "${1:-}" = --foreground ]; then
+	foreground=1
+	shift
+fi
+
+scriptdir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+
+if [ -n "${SURF_BIN:-}" ]; then
+	surf_bin=$SURF_BIN
+elif [ -x "$scriptdir/surf" ]; then
+	surf_bin=$scriptdir/surf
+else
+	surf_bin=surf
+fi
+
+if [ -n "${TABBED_BIN:-}" ]; then
+	tabbed_bin=$TABBED_BIN
+elif [ -x "$scriptdir/tabbed" ]; then
+	tabbed_bin=$scriptdir/tabbed
+elif [ -x "$scriptdir/../tabbed/tabbed" ]; then
+	tabbed_bin=$scriptdir/../tabbed/tabbed
+else
+	tabbed_bin=tabbed
+fi
+
+runtime_dir=${XDG_RUNTIME_DIR:-/tmp}
+state_dir=${XDG_STATE_HOME:-$HOME/.local/state}/surf
+xidfile=$runtime_dir/surf-tabbed-$(id -u).xid
+lockdir=$runtime_dir/surf-session-$(id -u).lock
+statefile=$state_dir/session
+
+umask 077
+mkdir -p "$runtime_dir" "$state_dir"
+
+read_xid() {
+	[ -r "$xidfile" ] || return 1
+	sed -n '1p' "$xidfile"
+}
+
+valid_window() {
+	[ -n "${1:-}" ] || return 1
+	xprop -id "$1" WM_CLASS 2>/dev/null |
+		grep -q '"surf", "tabbed"'
+}
+
+manager_running() {
+	[ -r "$lockdir/pid" ] || return 1
+	manager_pid=$(sed -n '1p' "$lockdir/pid")
+	[ -n "$manager_pid" ] && kill -0 "$manager_pid" 2>/dev/null
+}
+
+tab_count() {
+	xprop -id "$1" _TABBED_CLIENTS 2>/dev/null |
+		sed -n 's/^[^#]*# //p' | tr ',' '\n' |
+		awk 'NF { count++ } END { print count + 0 }'
+}
+
+open_tabs() {
+	xid=$1
+	shift
+	for uri do
+		before=$(tab_count "$xid")
+		"$surf_bin" -e "$xid" "$uri" >/dev/null 2>&1 &
+		i=0
+		while [ "$i" -lt 50 ]; do
+			after=$(tab_count "$xid")
+			[ "$after" -gt "$before" ] && break
+			i=$((i + 1))
+			sleep 0.1
+		done
+	done
+}
+
+focus_window() {
+	if command -v xdotool >/dev/null 2>&1; then
+		xdotool windowactivate "$1" >/dev/null 2>&1 || true
+	fi
+}
+
+xid=$(read_xid 2>/dev/null || true)
+if valid_window "$xid" && manager_running; then
+	if [ "$#" -gt 0 ]; then
+		open_tabs "$xid" "$@"
+	fi
+	focus_window "$xid"
+	exit 0
+fi
+
+if [ "$foreground" -eq 0 ]; then
+	setsid "$0" --foreground "$@" </dev/null >/dev/null 2>&1 &
+	exit 0
+fi
+
+acquired=0
+if mkdir "$lockdir" 2>/dev/null; then
+	acquired=1
+else
+	if ! manager_running; then
+		rm -f "$lockdir/pid"
+		rmdir "$lockdir" 2>/dev/null || true
+		if mkdir "$lockdir" 2>/dev/null; then
+			acquired=1
+		fi
+	fi
+fi
+
+if [ "$acquired" -eq 0 ]; then
+	i=0
+	while [ "$i" -lt 50 ]; do
+		xid=$(read_xid 2>/dev/null || true)
+		if valid_window "$xid"; then
+			if [ "$#" -gt 0 ]; then
+				open_tabs "$xid" "$@"
+			fi
+			focus_window "$xid"
+			exit 0
+		fi
+		i=$((i + 1))
+		sleep 0.1
+	done
+	exit 1
+fi
+
+printf '%s\n' "$$" >"$lockdir/pid"
+restorefile=$(mktemp "$runtime_dir/surf-restore.XXXXXX")
+
+cleanup() {
+	rm -f "$restorefile" "$lockdir/pid"
+	rmdir "$lockdir" 2>/dev/null || true
+}
+
+stop() {
+	exit 0
+}
+
+trap cleanup EXIT
+trap stop INT TERM HUP
+
+xid=$(read_xid 2>/dev/null || true)
+created=0
+if ! valid_window "$xid"; then
+	rm -f "$xidfile"
+	xid=$("$tabbed_bin" -csdn surf -s -r 2 "$surf_bin" -e '')
+	printf '%s\n' "$xid" >"$xidfile"
+	created=1
+fi
+
+if [ "$created" -eq 1 ] || [ "$#" -gt 0 ]; then
+	if [ "$#" -gt 0 ]; then
+		for uri do
+			printf '%s\n' "$uri"
+		done >"$restorefile"
+	elif [ -s "$statefile" ]; then
+		cp "$statefile" "$restorefile"
+	else
+		printf '%s\n' about:blank >"$restorefile"
+	fi
+
+	while IFS= read -r uri; do
+		[ -n "$uri" ] || continue
+		open_tabs "$xid" "$uri"
+	done <"$restorefile"
+fi
+
+snapshot() {
+	tmp=$(mktemp "$state_dir/session.XXXXXX")
+	for wid in $(xprop -id "$xid" _TABBED_CLIENTS 2>/dev/null |
+		sed -n 's/^[^#]*# //p' | tr ',' '\n' |
+		sed 's/^[[:space:]]*//; s/[[:space:]]*$//')
+	do
+		xprop -id "$wid" _SURF_URI 2>/dev/null |
+			sed -n 's/^_SURF_URI(UTF8_STRING) = "\(.*\)"$/\1/p'
+	done >"$tmp"
+
+	if [ -s "$tmp" ]; then
+		chmod 600 "$tmp"
+		mv "$tmp" "$statefile"
+	else
+		rm -f "$tmp"
+	fi
+}
+
+while valid_window "$xid"; do
+	snapshot
+	sleep 1
+done
+
+rm -f "$xidfile"

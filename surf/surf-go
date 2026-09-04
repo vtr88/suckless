@@ -1,0 +1,64 @@
+#!/bin/sh
+
+set -eu
+
+resolve() {
+	input=$1
+	case "$input" in
+		http://*|https://*|about:*|file:*|*://*)
+			printf '%s\n' "$input"
+			;;
+		*[[:space:]]*)
+			query=$(python3 -c 'import sys, urllib.parse; print(urllib.parse.quote_plus(sys.argv[1]))' "$input")
+			printf 'https://duckduckgo.com/?q=%s\n' "$query"
+			;;
+		astraios|astraios/*|localhost|localhost:*|localhost/*|127.*|\[*\]*)
+			printf 'http://%s\n' "$input"
+			;;
+		*.*|*:*|*/*)
+			printf 'https://%s\n' "$input"
+			;;
+		*)
+			query=$(python3 -c 'import sys, urllib.parse; print(urllib.parse.quote_plus(sys.argv[1]))' "$input")
+			printf 'https://duckduckgo.com/?q=%s\n' "$query"
+			;;
+	esac
+}
+
+if [ "${1:-}" = "--resolve" ]; then
+	[ "$#" -eq 2 ] || exit 2
+	resolve "$2"
+	exit 0
+fi
+
+[ "$#" -eq 1 ] || exit 2
+winid=$1
+history=${XDG_CACHE_HOME:-$HOME/.cache}/surf/navigation-history
+
+current=$(xprop -id "$winid" _SURF_URI 2>/dev/null |
+	sed -n 's/^_SURF_URI(UTF8_STRING) = "\(.*\)"$/\1/p')
+
+choice=$({
+	printf '%s\n' "$current"
+	printf '%s\n' \
+		http://astraios/ \
+		https://www.last.fm/ \
+		https://lichess.org/ \
+		https://web.whatsapp.com/ \
+		https://news.ycombinator.com/ \
+		https://www.youtube.com/
+	if [ -r "$history" ]; then
+		tail -r "$history" 2>/dev/null || tac "$history"
+	fi
+} | awk 'NF && !seen[$0]++' | dmenu -i -l 10 -p 'URL ou busca:' -w "$winid")
+
+choice=$(printf '%s' "$choice" |
+	sed 's/^[[:space:]]*//; s/[[:space:]]*$//')
+[ -n "$choice" ] || exit 0
+
+umask 077
+mkdir -p "$(dirname "$history")"
+printf '%s\n' "$choice" >>"$history"
+
+uri=$(resolve "$choice")
+xprop -id "$winid" -f _SURF_GO 8u -set _SURF_GO "$uri" >/dev/null

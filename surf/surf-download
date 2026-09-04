@@ -1,0 +1,66 @@
+#!/bin/sh
+
+set -eu
+
+[ "$#" -eq 4 ] || {
+	printf 'uso: surf-download USER_AGENT COOKIE_FILE REFERER URL\n' >&2
+	exit 2
+}
+
+user_agent=$1
+cookie_file=$2
+referer=$3
+uri=$4
+
+if [ -n "${SURF_DOWNLOAD_DIR:-}" ]; then
+	download_dir=$SURF_DOWNLOAD_DIR
+elif command -v xdg-user-dir >/dev/null 2>&1; then
+	download_dir=$(xdg-user-dir DOWNLOAD 2>/dev/null || true)
+else
+	download_dir=
+fi
+
+case $download_dir in
+	/*) ;;
+	*) download_dir=$HOME/Downloads ;;
+esac
+
+umask 077
+mkdir -p "$download_dir"
+
+set -- \
+	--globoff \
+	--location \
+	--fail \
+	--remote-name \
+	--remote-header-name \
+	--no-clobber \
+	--remove-on-error \
+	--user-agent "$user_agent"
+
+if [ -n "$referer" ]; then
+	set -- "$@" --referer "$referer"
+fi
+
+if [ -n "$cookie_file" ]; then
+	mkdir -p "$(dirname "$cookie_file")"
+	touch "$cookie_file"
+	chmod 600 "$cookie_file"
+	set -- "$@" --cookie "$cookie_file" --cookie-jar "$cookie_file"
+fi
+
+printf 'Baixando em %s\n\n' "$download_dir"
+if (cd "$download_dir" && curl "$@" "$uri"); then
+	printf '\nDownload concluído em %s\n' "$download_dir"
+	if [ "${SURF_DOWNLOAD_NO_WAIT:-0}" != 1 ]; then
+		sleep 2
+	fi
+else
+	status=$?
+	printf '\nFalha no download (curl: %s).\n' "$status" >&2
+	if [ "${SURF_DOWNLOAD_NO_WAIT:-0}" != 1 ]; then
+		printf 'Pressione Enter para fechar. '
+		read -r _ || true
+	fi
+	exit "$status"
+fi

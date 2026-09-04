@@ -7,3 +7,7 @@ slock/slock
 slstatus/slstatus
 st/st
 st/stest
+surf/surf
+surf/webext-surf.so
+tabbed/tabbed
+tabbed/xembed

@@ -1,0 +1,39 @@
+#!/bin/sh
+
+set -eu
+
+[ "$#" -eq 2 ] || exit 2
+xid=$1
+line=$2
+
+case $line in
+	1|2|3|4|5|6|7|8|9|10) ;;
+	*) exit 2 ;;
+esac
+
+config_dir=${XDG_CONFIG_HOME:-$HOME/.config}/surf
+bookmarks=${SURF_BOOKMARKS_FILE:-$config_dir/bookmarks}
+[ -r "$bookmarks" ] || exit 0
+
+uri=$(sed -n "${line}p" "$bookmarks" |
+	sed 's/^[[:space:]]*//; s/[[:space:]]*$//')
+case $uri in
+	''|'#'*) exit 0 ;;
+esac
+
+scriptdir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+if [ -n "${SURF_BIN:-}" ]; then
+	surf_bin=$SURF_BIN
+elif [ -x "$scriptdir/surf" ]; then
+	surf_bin=$scriptdir/surf
+else
+	surf_bin=surf
+fi
+
+if [ -x "$scriptdir/surf-go" ]; then
+	uri=$("$scriptdir/surf-go" --resolve "$uri")
+elif command -v surf-go >/dev/null 2>&1; then
+	uri=$(surf-go --resolve "$uri")
+fi
+
+"$surf_bin" -e "$xid" "$uri" >/dev/null 2>&1 &

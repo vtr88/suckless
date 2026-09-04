@@ -1,0 +1,31 @@
+[
+  { "trigger": { "url-filter": "doubleclick\\.net", "load-type": ["third-party"] }, "action": { "type": "block" } },
+  { "trigger": { "url-filter": "googlesyndication\\.com", "load-type": ["third-party"] }, "action": { "type": "block" } },
+  { "trigger": { "url-filter": "googleadservices\\.com", "load-type": ["third-party"] }, "action": { "type": "block" } },
+  { "trigger": { "url-filter": "googletagservices\\.com", "load-type": ["third-party"] }, "action": { "type": "block" } },
+  { "trigger": { "url-filter": "amazon-adsystem\\.com", "load-type": ["third-party"] }, "action": { "type": "block" } },
+  { "trigger": { "url-filter": "adform\\.net", "load-type": ["third-party"] }, "action": { "type": "block" } },
+  { "trigger": { "url-filter": "adnxs\\.com", "load-type": ["third-party"] }, "action": { "type": "block" } },
+  { "trigger": { "url-filter": "criteo\\.com", "load-type": ["third-party"] }, "action": { "type": "block" } },
+  { "trigger": { "url-filter": "criteo\\.net", "load-type": ["third-party"] }, "action": { "type": "block" } },
+  { "trigger": { "url-filter": "pubmatic\\.com", "load-type": ["third-party"] }, "action": { "type": "block" } },
+  { "trigger": { "url-filter": "rubiconproject\\.com", "load-type": ["third-party"] }, "action": { "type": "block" } },
+  { "trigger": { "url-filter": "taboola\\.com", "load-type": ["third-party"] }, "action": { "type": "block" } },
+  { "trigger": { "url-filter": "outbrain\\.com", "load-type": ["third-party"] }, "action": { "type": "block" } },
+  { "trigger": { "url-filter": "google-analytics\\.com", "load-type": ["third-party"] }, "action": { "type": "block" } },
+  { "trigger": { "url-filter": "googletagmanager\\.com", "load-type": ["third-party"] }, "action": { "type": "block" } },
+  { "trigger": { "url-filter": "scorecardresearch\\.com", "load-type": ["third-party"] }, "action": { "type": "block" } },
+  { "trigger": { "url-filter": "quantserve\\.com", "load-type": ["third-party"] }, "action": { "type": "block" } },
+  { "trigger": { "url-filter": "hotjar\\.com", "load-type": ["third-party"] }, "action": { "type": "block" } },
+  { "trigger": { "url-filter": "clarity\\.ms", "load-type": ["third-party"] }, "action": { "type": "block" } },
+  { "trigger": { "url-filter": "chartbeat\\.com", "load-type": ["third-party"] }, "action": { "type": "block" } },
+  { "trigger": { "url-filter": "segment\\.com", "load-type": ["third-party"] }, "action": { "type": "block" } },
+  { "trigger": { "url-filter": "newrelic\\.com", "load-type": ["third-party"] }, "action": { "type": "block" } },
+  {
+    "trigger": { "url-filter": ".*", "resource-type": ["document"] },
+    "action": {
+      "type": "css-display-none",
+      "selector": "ins.adsbygoogle, iframe[id^='google_ads_'], iframe[src*='doubleclick.net'], [id^='div-gpt-ad'], [data-ad-slot], .ad-container, .ad-banner, .advertisement, .advertising, .sponsored-ad"
+    }
+  }
+]

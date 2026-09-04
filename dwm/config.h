@@ -60,6 +60,7 @@ static const Rule rules[] = {
 	{ "URxvt",        NULL,          NULL,       1 << 0,       0,           0,           -1 },
 	{ "Alacritty",    NULL,          NULL,       1 << 0,       0,           0,           -1 },
 	{ "firefox-esr",  NULL,          NULL,       1 << 1,       0,           0,           -1 },
+	{ NULL,           "surf",        NULL,       1 << 1,       0,           0,           -1 },
 	{ "Spotify",      NULL,          NULL,       1 << 2,       1,           0,           -1 },
 	{ "fastpotify",   NULL,          NULL,       1 << 2,       1,           0,           -1 },
 	{ "Aseprite",     NULL,          NULL,       1 << 3,       0,           0,           -1 },
@@ -108,13 +109,13 @@ static const Layout layouts[] = {
 static char dmenumon[2] = "0";
 static const char *dmenucmd[]     = { "/usr/local/bin/dmenu_run", "-i", "-m", dmenumon, NULL };
 static const char *termcmd[]      = { "/usr/local/bin/st", "-e", "tmux", NULL };
-static const char *firefoxcmd[]   = { "firefox-esr", NULL };
+static const char *surfcmd[]      = { "/usr/local/bin/surf-session", NULL };
 static const char *spotifycmd[]   = { "/usr/bin/spotify", NULL };
 static const char *asepritecmd[]  = { "/usr/bin/aseprite", NULL };
 static const char *renoisecmd[]   = { "pw-jack", "renoise", NULL };
 static const char *chatgptcmd[]   = { "/usr/bin/chatgpt", NULL };
 static const Launcher termlauncher      = { "st-256color", termcmd };
-static const Launcher firefoxlauncher   = { "firefox-esr", firefoxcmd };
+static const Launcher surflauncher      = { "surf", surfcmd };
 static const Launcher spotifylauncher   = { "Spotify", spotifycmd };
 static const Launcher asepritelauncher  = { "Aseprite", asepritecmd };
 static const Launcher renoiselauncher   = { "Renoise", renoisecmd };
@@ -184,7 +185,7 @@ static const Key keys[] = {
 	/* modifier                     key        function        argument */
 	{ ALTKEY,                       XK_apostrophe, spawn,      {.v = dmenucmd } },
 	{ ALTKEY,                       XK_1,      focusorlaunch,  {.v = &termlauncher } },
-	{ ALTKEY,                       XK_2,      focusorlaunch,  {.v = &firefoxlauncher } },
+	{ ALTKEY,                       XK_2,      focusorlaunch,  {.v = &surflauncher } },
 	{ ALTKEY,                       XK_3,      focusorlaunch,  {.v = &spotifylauncher } },
 	{ ALTKEY,                       XK_4,      focusorlaunch,  {.v = &asepritelauncher } },
 	{ ALTKEY,                       XK_5,      focusorlaunch,  {.v = &renoiselauncher } },

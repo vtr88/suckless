@@ -1,0 +1,391 @@
+/* Copied from dotfiles/.config/stylus/Gruvwood/lastfm.user.css.
+ * The Stylus metadata and @-moz-document wrapper are intentionally omitted;
+ * surf applies this file only to last.fm. */
+	:root {
+		--clr-black: #241f1a !important;
+		--clr-obsidian: #2e2821 !important;
+		--clr-mineshaft: #342e25 !important;
+		--clr-soot: #3a3328 !important;
+		--clr-charcoal: #453c30 !important;
+		--clr-graphite: #756653 !important;
+		--clr-slate: #a89984 !important;
+		--clr-cement: #d5c4a1 !important;
+		--clr-ash: #d5c4a1 !important;
+		--clr-silver: #ebdbb2 !important;
+		--clr-smog: #453c30 !important;
+		--clr-fog: #53483a !important;
+		--clr-lunar: #453c30 !important;
+		--clr-dust: #53483a !important;
+		--clr-platinum: #3a3328 !important;
+		--clr-white: #fbf1c7 !important;
+		--clr-postbox: #f28c38 !important;
+		--clr-habanero: #ff9f3f !important;
+		--clr-sangria: #c65d3b !important;
+		--clr-tangerine: #f28c38 !important;
+		--clr-fire: #ff9f3f !important;
+		--clr-carrot: #ffb347 !important;
+		--clr-merigold: #edbd4f !important;
+		--clr-squash: #d2a442 !important;
+		--clr-caramel: #b07d32 !important;
+		--clr-forest: #68772f !important;
+		--clr-fern: #96a542 !important;
+		--clr-jade: #bdca58 !important;
+		--clr-pistachio: #bdca58 !important;
+	}
+
+	html,
+	body {
+		background: #2e2821 !important;
+		color: #d5c4a1 !important;
+	}
+
+	.main-content,
+	.content-top,
+	.content-top-inner,
+	.content-top-lower,
+	.main-content > .container,
+	.content-top > .container,
+	.page-content,
+	.page-content > .container,
+	.user-dashboard-layout .container,
+	.user-dashboard-layout .main-content {
+		background-color: #342e25 !important;
+		color: #d5c4a1 !important;
+	}
+
+	.user-dashboard-layout--version-3,
+	.user-dashboard-layout--version-4,
+	.user-dashboard-layout--version-5,
+	.user-dashboard-layout--version-3 .container,
+	.user-dashboard-layout--version-4 .container,
+	.user-dashboard-layout--version-5 .container,
+	.user-dashboard-layout--version-3 .main-content,
+	.user-dashboard-layout--version-4 .main-content,
+	.user-dashboard-layout--version-5 .main-content,
+	.user-dashboard,
+	.user-dashboard .container {
+		background-color: #342e25 !important;
+		color: #d5c4a1 !important;
+	}
+
+	.main-content .row,
+	.main-content .col-main,
+	.main-content .col-sidebar,
+	.user-profile,
+	.user-profile-content,
+	.user-overview,
+	.user-dashboard .row,
+	.user-dashboard section,
+	.user-dashboard .col-main,
+	.user-dashboard .col-sidebar {
+		background-color: #3a3328 !important;
+	}
+
+	.chartlist,
+	.chartlist-row,
+	.chartlist-row--now-scrobbling,
+	.about-me-sidebar,
+	.personal-stats,
+	.personal-stats-item,
+	.user-dashboard-col,
+	.user-dashboard-buffer,
+	.report-box-container {
+		background-color: #3a3328 !important;
+		border-color: #53483a !important;
+	}
+
+	.chartlist-break::after,
+	.chartlist-row::after {
+		border-color: #53483a !important;
+	}
+
+	.chartlist-row:hover,
+	.chartlist-row--highlight {
+		background-color: #453c30 !important;
+	}
+
+	.chartlist-row--now-scrobbling {
+		box-shadow: inset 3px 0 #f28c38 !important;
+	}
+
+	/* The current profile chart hard-codes a pale pink proportional bar. */
+	.chartlist-count-bar-slug {
+		background-color: #68772f !important;
+	}
+
+	.chartlist-count-bar-link:focus .chartlist-count-bar-slug,
+	.chartlist-count-bar-link:hover .chartlist-count-bar-slug {
+		background-color: #96a542 !important;
+	}
+
+	.chartlist-count-bar-value,
+	.chartlist-count-bar-link:focus .chartlist-count-bar-value,
+	.chartlist-count-bar-link:hover .chartlist-count-bar-value {
+		color: #ebdbb2 !important;
+	}
+
+	.tab-container {
+		background-color: #453c30 !important;
+		color: #d5c4a1 !important;
+	}
+
+	.tab-container .selector {
+		background-color: #68772f !important;
+	}
+
+	.scrobble-stats,
+	.scrobble-stats-info,
+	.scrobble-stats-graph,
+	.user-dashboard-scrobble-stats,
+	.user-dashboard-scrobble-stats .user-dashboard-module-inner-wrap {
+		background-color: #342e25 !important;
+		border-color: #53483a !important;
+		color: #d5c4a1 !important;
+	}
+
+	.highcharts-background {
+		fill: #342e25 !important;
+		stroke: #342e25 !important;
+	}
+
+	.highcharts-series-0 path,
+	.highcharts-series-0 rect,
+	.highcharts-color-0 {
+		fill: #f28c38 !important;
+		stroke: #f28c38 !important;
+	}
+
+	.highcharts-series-1 path,
+	.highcharts-series-1 rect,
+	.highcharts-color-1 {
+		fill: #68772f !important;
+		stroke: #68772f !important;
+	}
+
+	.masthead,
+	.masthead-inner,
+	.player-bar,
+	.player-bar-v2 {
+		background-color: #241f1a !important;
+	}
+
+	.header--overview {
+		background-color: #342e25 !important;
+	}
+
+	.header--overview div:not(.header-background) {
+		background-color: transparent !important;
+	}
+
+	.header--overview .header-info-secondary,
+	.header--overview .header-metadata,
+	.header--overview .header-metadata-tnew {
+		background-color: #342e25 !important;
+	}
+
+	.header-metadata-display,
+	.header-metadata-tnew-display {
+		color: #bdca58 !important;
+	}
+
+	.card-bg,
+	.modal-body,
+	.dropdown-menu-clickable,
+	.dropdown-menu-list,
+	.navlist-hidden-list,
+	.tooltip-light,
+	.share-block,
+	.calendar-icon {
+		background: #453c30 !important;
+		border-color: #53483a !important;
+		color: #d5c4a1 !important;
+	}
+
+	/* Listening Reports uses white promo cards outside the site palette. */
+	.listening-report-promo,
+	.promo-v3 .listening-report-promo {
+		background-color: #453c30 !important;
+		border-color: #53483a !important;
+		color: #d5c4a1 !important;
+	}
+
+	.listening-report-promo:focus,
+	.listening-report-promo:hover,
+	.promo-v3 .listening-report-promo:focus,
+	.promo-v3 .listening-report-promo:hover {
+		background-color: #53483a !important;
+		color: #ebdbb2 !important;
+	}
+
+	.listening-report-promo-title,
+	.promo-v3 .listening-report-promo-title {
+		color: #a89984 !important;
+	}
+
+	.listening-report-promo-date,
+	.promo-v3 .listening-report-promo-date {
+		color: #ebdbb2 !important;
+	}
+
+	/* Divider between the date filter and the share/settings controls. */
+	.section-with-settings .section-control::before {
+		border-right-color: #a89984 !important;
+	}
+
+	/* Recommendations still use hard-coded white surfaces instead of the
+	 * palette variables above. Keep the artwork untouched and theme the
+	 * cards, their context blocks and the lazy recommendations container. */
+	.lazy-recs-bar-full-width-wrapper,
+	.lazy-recs-bar-wrapper,
+	.lazy-recs-bar-container,
+	.lazy-recs-bar-recommended-items-item,
+	.music-recommended-albums-item,
+	.recommended-tracks-item,
+	.music-recommended-artists-artist {
+		background-color: #342e25 !important;
+		border-color: #53483a !important;
+		color: #d5c4a1 !important;
+	}
+
+	.lazy-recs-bar-recommended-items-item-context,
+	.lazy-recs-bar-recommended-items-last-scrobble,
+	.music-recommended-albums-item-context,
+	.music-recommended-albums-album-context,
+	.music-recommended-albums-last-scrobble,
+	.recommended-tracks-item-context,
+	.recommended-tracks-last-scrobble,
+	.music-recommended-artists-context {
+		background-color: #342e25 !important;
+		border-color: #53483a !important;
+		color: #a89984 !important;
+	}
+
+	.recs-feed .context {
+		background: #342e25 !important;
+		box-shadow: inset 1px 0 #53483a, inset -1px -1px #53483a !important;
+		color: #a89984 !important;
+	}
+
+	.lazy-recs-bar-recommended-items-item-date +
+		.lazy-recs-bar-recommended-items-item-context::before,
+	.lazy-recs-bar-recommended-items-item-listeners +
+		.lazy-recs-bar-recommended-items-item-context::before,
+	.music-recommended-albums-item-date +
+		.music-recommended-albums-item-context::before,
+	.music-recommended-albums-item-listeners +
+		.music-recommended-albums-item-context::before,
+	.music-recommended-albums-album-context::before,
+	.recommended-tracks-item-date + .recommended-tracks-item-context::before,
+	.recommended-tracks-item-listeners +
+		.recommended-tracks-item-context::before,
+	.factbox-summary + .music-recommended-artists-context::before,
+	.music-recommended-artists-artist-stats +
+		.music-recommended-artists-context::before {
+		background-color: #53483a !important;
+	}
+
+	.stationlink-list .stationlink::after,
+	.resource-external-link::after {
+		border-color: #53483a !important;
+	}
+
+	.stationlink-list .stationlink::before,
+	.stationlink::before,
+	.lazy-recs-bar-recommended-items-item-playlink::before,
+	.music-recommended-albums-item-playlink::before,
+	.recommended-tracks-item-playlink::before,
+	.recs-feed .recs-feed-playlink::before,
+	.chartlist-play-button::before,
+	.grid-items-item-playlink .image-overlay-playlink-link::before {
+		background-color: #68772f !important;
+		box-shadow: 0 0 0 1px #96a542 !important;
+	}
+
+	.stationlink-list .stationlink:focus::before,
+	.stationlink-list .stationlink:hover::before,
+	.stationlink:focus::before,
+	.stationlink:hover::before,
+	.lazy-recs-bar-recommended-items-item-playlink:focus::before,
+	.lazy-recs-bar-recommended-items-item-playlink:hover::before,
+	.music-recommended-albums-item-playlink:focus::before,
+	.music-recommended-albums-item-playlink:hover::before,
+	.recommended-tracks-item-playlink:focus::before,
+	.recommended-tracks-item-playlink:hover::before,
+	.recs-feed .recs-feed-playlink:focus::before,
+	.recs-feed .recs-feed-playlink:hover::before,
+	.chartlist-play-button:focus::before,
+	.chartlist-play-button:hover::before,
+	.grid-items-item-playlink .image-overlay-playlink-link:focus::before,
+	.grid-items-item-playlink .image-overlay-playlink-link:hover::before {
+		background-color: #96a542 !important;
+	}
+
+	.btn-primary,
+	.btn-add,
+	.btn-add-sm,
+	.no-data-message-button,
+	.masthead-search-submit,
+	.chartlist-action-button,
+	.player-bar .player-bar-progress-slug,
+	.calendar-icon .calendar-icon-month {
+		background-color: #f28c38 !important;
+		color: #241f1a !important;
+	}
+
+	a,
+	.mimic-link {
+		color: #d5c4a1 !important;
+	}
+
+	.group-heading,
+	.sidebar-group-heading,
+	.pagination-page[aria-current] {
+		color: #bdca58 !important;
+	}
+
+	.secondary-nav-item-link--active {
+		color: #ff9f3f !important;
+	}
+
+	.secondary-nav-item-link--active::after {
+		background-color: #f28c38 !important;
+	}
+
+	.chartlist-row--now-scrobbling .chartlist-name,
+	.about-me-sidebar h3,
+	.about-me-sidebar h4 {
+		color: #ffb347 !important;
+	}
+
+	.about-me-sidebar a {
+		color: #bdca58 !important;
+	}
+
+	.about-me-sidebar a:hover,
+	.about-me-sidebar a:focus {
+		color: #ff9f3f !important;
+	}
+
+	a:hover,
+	a:focus,
+	.mimic-link:hover,
+	.mimic-link:focus {
+		color: #ff9f3f !important;
+	}
+
+	input,
+	select,
+	textarea {
+		background: #342e25 !important;
+		border-color: #53483a !important;
+		color: #ebdbb2 !important;
+	}
+
+	::selection {
+		background: #756653;
+		color: #fbf1c7;
+	}
+
+	:focus-visible {
+		outline-color: #ff9f3f !important;
+	}

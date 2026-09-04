@@ -396,6 +396,8 @@ appname(const char *class, const char *instance, const char *title)
 		return "st-mux";
 	if (strstr(class, "firefox"))
 		return "firefox";
+	if (strstr(instance, "surf"))
+		return "surf";
 	if (strstr(class, "Spotify"))
 		return "spotify";
 	if (strstr(class, "Aseprite"))

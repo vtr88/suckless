@@ -1,0 +1,87 @@
+/* Copied from dotfiles/.config/stylus/Gruvwood/lichess.user.css.
+ * The Stylus metadata and @-moz-document wrapper are intentionally omitted;
+ * surf applies this file only to lichess.org. */
+	html,
+	html.dark,
+	html.light,
+	html.transp {
+		---site-hue: 34deg !important;
+
+		--c-bg: #3a3328 !important;
+		--c-bg-box: #3a3328 !important;
+		--c-bg-high: #453c30 !important;
+		--c-page-input: #342e25 !important;
+		--c-bg-mid: #453c30 !important;
+		--c-bg-low: #53483a !important;
+		--c-bg-popup: #453c30 !important;
+		--c-bg-page: #2e2821 !important;
+		--c-bg-zebra: #342e25 !important;
+		--c-bg-zebra2: #453c30 !important;
+		--c-bg-header-dropdown: #453c30 !important;
+		--c-bg-input: #2e2821 !important;
+		--c-bg-variation: #342e25 !important;
+		--c-bg-opaque: #3a3328 !important;
+		--c-body-gradient: #453c30 !important;
+
+		--c-font: #d5c4a1 !important;
+		--c-font-dim: #a89984 !important;
+		--c-font-dimmer: #756653 !important;
+		--c-font-clear: #ebdbb2 !important;
+		--c-font-clearer: #fbf1c7 !important;
+		--c-font-page: #a89984 !important;
+		--c-header-dropdown: #d5c4a1 !important;
+
+		--c-primary: #ff9f3f !important;
+		--c-primary-dim: #d27d32 !important;
+		--c-primary-clear: #ffb347 !important;
+		--c-link: #ff9f3f !important;
+		--c-link-dim: #d27d32 !important;
+		--c-link-clear: #ffb347 !important;
+
+		--c-secondary: #96a542 !important;
+		--c-secondary-dim: #7f8f38 !important;
+		--c-secondary-dimmer: #68772f !important;
+		--c-good: #96a542 !important;
+		--c-good-move: #bdca58 !important;
+		--c-dasher: #96a542 !important;
+		--c-dasher-light: #68772f !important;
+
+		--c-accent: #edbd4f !important;
+		--c-accent-dim: #d2a442 !important;
+		--c-accent-faint: rgb(237 189 79 / 0.4) !important;
+		--c-accent-clear: #ffd27a !important;
+		--c-accent-glass: rgb(237 189 79 / 0.2) !important;
+		--c-accent-cloud: rgb(237 189 79 / 0.5) !important;
+		--c-brag: #ffb347 !important;
+		--c-brag-hover: #ffd27a !important;
+		--c-fancy: #bdca58 !important;
+
+		--c-border: #53483a !important;
+		--c-border-page: #342e25 !important;
+		--c-border-light: #756653 !important;
+		--c-shade: #756653 !important;
+		--c-dark: #241f1a !important;
+		--c-dimmer: #241f1a !important;
+		--c-bad: #c65d3b !important;
+		--c-error: #c65d3b !important;
+		--c-live: #f28c38 !important;
+		--c-warn: #ffb347 !important;
+
+		--c-chat-host-bg: rgb(150 165 66 / 0.32) !important;
+		--c-chat-mention-bg: rgb(237 189 79 / 0.28) !important;
+		--c-page-mask: rgb(36 31 26 / 0.72) !important;
+		--c-metal-top: #53483a !important;
+		--c-metal-bottom: #453c30 !important;
+		--c-metal-top-hover: #675847 !important;
+		--c-metal-bottom-hover: #53483a !important;
+		--c-pool-button: rgb(69 60 48 / 0.8) !important;
+	}
+
+	::selection {
+		background: #756653;
+		color: #fbf1c7;
+	}
+
+	:focus-visible {
+		outline-color: #ff9f3f !important;
+	}
