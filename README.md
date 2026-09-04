@@ -129,9 +129,10 @@ Cookies, cache e dados locais ficam persistentes em `~/.surf`, portanto os
 logins podem ser mantidos entre execucoes. O primeiro login e a compatibilidade
 de cada site ainda dependem do WebKitGTK.
 
-Downloads abrem em um `st`, sao gravados no diretorio configurado pelo sistema
-como Downloads (com `~/Downloads` como fallback) e nunca sobrescrevem um arquivo
-de mesmo nome: o `curl` cria os sufixos `.1`, `.2` e assim por diante.
+Downloads abrem em um `st`, sao gravados no subdiretorio `surf/` do diretorio
+configurado pelo sistema como Downloads (com `~/Downloads/surf` como fallback)
+e nunca sobrescrevem um arquivo de mesmo nome: o `curl` cria os sufixos `.1`,
+`.2` e assim por diante.
 
 Controles principais:
 

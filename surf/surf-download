@@ -14,15 +14,22 @@ uri=$4
 
 if [ -n "${SURF_DOWNLOAD_DIR:-}" ]; then
 	download_dir=$SURF_DOWNLOAD_DIR
-elif command -v xdg-user-dir >/dev/null 2>&1; then
-	download_dir=$(xdg-user-dir DOWNLOAD 2>/dev/null || true)
 else
-	download_dir=
+	download_root=
+	if command -v xdg-user-dir >/dev/null 2>&1; then
+		download_root=$(xdg-user-dir DOWNLOAD 2>/dev/null || true)
+	fi
+	case $download_root in
+		""|"$HOME") download_root=$HOME/Downloads ;;
+		/*) ;;
+		*) download_root=$HOME/Downloads ;;
+	esac
+	download_dir=$download_root/surf
 fi
 
 case $download_dir in
 	/*) ;;
-	*) download_dir=$HOME/Downloads ;;
+	*) download_dir=$HOME/Downloads/surf ;;
 esac
 
 umask 077
