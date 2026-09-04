@@ -150,7 +150,8 @@ Controles principais:
 - `Ctrl-c` / `Ctrl-v`: copiar e colar texto; quando o clipboard contem uma
   imagem, `Ctrl-v` a entrega como arquivo ao campo web ativo (por exemplo,
   ChatGPT ou WhatsApp Web).
-- clique do meio em um link: abrir o link em uma nova aba.
+- `Ctrl` + clique esquerdo, ou clique do meio, em um link: abrir o link em uma
+  nova aba.
 
 O `surf` anuncia preferencia por tema escuro por padrao, portanto paginas e
 componentes que seguem o tema do sistema usam sua variante escura.
