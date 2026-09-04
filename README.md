@@ -100,6 +100,11 @@ Surf com abas
 `surf` e `tabbed` sao programas separados. O `surf` implementa XEmbed e cada
 janela dele vira uma aba dentro do `tabbed`.
 
+As abas usam a largura do proprio titulo, com minimo de 72 pixels e limite de
+200 pixels configurados por `tabminwidth` e `tabmaxwidth` em
+`tabbed/config.h`. Quando nao cabem todas, a barra preserva a aba ativa e usa
+os indicadores laterais para o restante.
+
 Compile e instale os dois:
 
     cd tabbed
@@ -142,7 +147,14 @@ Controles principais:
 - `Ctrl-Shift-h` / `Ctrl-Shift-l`: trocar de aba.
 - `Ctrl-1` ate `Ctrl-0`: ir diretamente para uma aba.
 - `Ctrl-q`: fechar a aba atual.
+- `Ctrl-c` / `Ctrl-v`: copiar e colar texto; quando o clipboard contem uma
+  imagem, `Ctrl-v` a entrega como arquivo ao campo web ativo (por exemplo,
+  ChatGPT ou WhatsApp Web).
 - clique do meio em um link: abrir o link em uma nova aba.
+
+O `surf` anuncia preferencia por tema escuro por padrao, portanto paginas e
+componentes que seguem o tema do sistema usam sua variante escura.
+`Ctrl-Shift-d` alterna essa preferencia durante a navegacao.
 
 O nivel de zoom e salvo por dominio em `~/.surf/zoom/`. `Ctrl-+` aumenta,
 `Ctrl--` diminui e `Ctrl-Shift-q` volta a 100%; ao retornar ao mesmo dominio,

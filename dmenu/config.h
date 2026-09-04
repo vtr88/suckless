@@ -12,10 +12,10 @@ static const char *fonts[] = {
 static const char *prompt      = NULL;      /* -p  option; prompt to the left of input field */
 static const char *colors[SchemeLast][2] = {
 	/*     fg         bg       */
-	/* Tema inspirado em gruvbox, com destaque verde em vez do azul padrao. */
-	[SchemeNorm] = { "#bdae93", "#282828" },
-	[SchemeSel] = { "#282828", "#b8bb26" },
-	[SchemeOut] = { "#282828", "#83a598" },
+	/* Mesma paleta quente usada pelo dwm e pelo tabbed. */
+	[SchemeNorm] = { "#bdca58", "#2e2821" },
+	[SchemeSel] = { "#ff9f3f", "#241f1a" },
+	[SchemeOut] = { "#241f1a", "#ff9f3f" },
 };
 /*
  * Menu vertical curto: tres linhas foram suficientes para uso diario e

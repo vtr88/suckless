@@ -253,11 +253,13 @@ static void destroywin(GtkWidget* w, Client *c);
 
 /* Hotkeys */
 static void pasteuri(GtkClipboard *clipboard, const char *text, gpointer d);
+static gboolean pasteimage(Client *c);
+static void pasteimagefinished(GObject *source, GAsyncResult *result,
+                               gpointer data);
 static void reload(Client *c, const Arg *a);
 static void print(Client *c, const Arg *a);
 static void showcert(Client *c, const Arg *a);
 static void clipboard(Client *c, const Arg *a);
-static void edit(Client *c, const Arg *a);
 static void zoom(Client *c, const Arg *a);
 static void scrollv(Client *c, const Arg *a);
 static void scrollh(Client *c, const Arg *a);
@@ -1554,6 +1556,9 @@ winevent(GtkWidget *w, GdkEvent *e, Client *c)
 		break;
 	case GDK_KEY_PRESS:
 		if (!curconfig[KioskMode].val.i) {
+			if (gdk_keyval_to_lower(e->key.keyval) == GDK_KEY_v &&
+			    CLEANMASK(e->key.state) == MODKEY && pasteimage(c))
+				return TRUE;
 			for (i = 0; i < LENGTH(keys); ++i) {
 				if (gdk_keyval_to_lower(e->key.keyval) ==
 				    keys[i].keyval &&
@@ -2022,6 +2027,71 @@ pasteuri(GtkClipboard *clipboard, const char *text, gpointer d)
 }
 
 void
+pasteimagefinished(GObject *source, GAsyncResult *result, gpointer data)
+{
+	GError *error = NULL;
+	JSCValue *value;
+
+	value = webkit_web_view_evaluate_javascript_finish(
+	    WEBKIT_WEB_VIEW(source), result, &error);
+	if (error) {
+		fprintf(stderr, "Could not paste clipboard image: %s\n",
+		        error->message);
+		g_error_free(error);
+	}
+	if (value)
+		g_object_unref(value);
+}
+
+gboolean
+pasteimage(Client *c)
+{
+	GtkClipboard *clipboard;
+	GdkPixbuf *pixbuf;
+	GError *error = NULL;
+	gchar *png = NULL, *base64, *script;
+	gsize pnglen = 0;
+
+	clipboard = gtk_clipboard_get(GDK_SELECTION_CLIPBOARD);
+	if (!gtk_clipboard_wait_is_image_available(clipboard))
+		return FALSE;
+
+	pixbuf = gtk_clipboard_wait_for_image(clipboard);
+	if (!pixbuf)
+		return FALSE;
+
+	if (!gdk_pixbuf_save_to_buffer(pixbuf, &png, &pnglen, "png", &error,
+	                               NULL)) {
+		fprintf(stderr, "Could not encode clipboard image: %s\n",
+		        error ? error->message : "unknown error");
+		g_clear_error(&error);
+		g_object_unref(pixbuf);
+		return FALSE;
+	}
+	g_object_unref(pixbuf);
+
+	base64 = g_base64_encode((const guchar *)png, pnglen);
+	g_free(png);
+	script = g_strdup_printf(
+	    "(function(b){try{"
+	    "var s=atob(b),a=new Uint8Array(s.length);"
+	    "for(var i=0;i<s.length;i++)a[i]=s.charCodeAt(i);"
+	    "var d=new DataTransfer();"
+	    "d.items.add(new File([a],\"clipboard.png\",{type:\"image/png\"}));"
+	    "var t=document.activeElement||document.body;"
+	    "t.dispatchEvent(new ClipboardEvent(\"paste\",{clipboardData:d,"
+	    "bubbles:true,cancelable:true}));return true}"
+	    "catch(e){throw new Error(\"image paste: \"+e.message)}})(\"%s\")",
+	    base64);
+	g_free(base64);
+
+	webkit_web_view_evaluate_javascript(c->view, script, -1, NULL, NULL, NULL,
+	    pasteimagefinished, NULL);
+	g_free(script);
+	return TRUE;
+}
+
+void
 reload(Client *c, const Arg *a)
 {
 	if (a->i)
@@ -2077,12 +2147,6 @@ clipboard(Client *c, const Arg *a)
 		gtk_clipboard_set_text(gtk_clipboard_get(
 		                       GDK_SELECTION_CLIPBOARD), uri, -1);
 	}
-}
-
-void
-edit(Client *c, const Arg *a)
-{
-	webkit_web_view_execute_editing_command(c->view, a->v);
 }
 
 void

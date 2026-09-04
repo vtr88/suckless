@@ -111,7 +111,8 @@ static void fullscreen(const Arg *arg);
 static char *getatom(int a);
 static int getclient(Window w);
 static XftColor getcolor(const char *colstr);
-static int getfirsttab(void);
+static void gettabrange(int *first, int *last);
+static int gettabwidth(int c);
 static Bool gettextprop(Window w, Atom atom, char *text, unsigned int size);
 static void initfont(const char *fontstr);
 static Bool isprotodel(int c);
@@ -182,16 +183,17 @@ void
 buttonpress(const XEvent *e)
 {
 	const XButtonPressedEvent *ev = &e->xbutton;
-	int i, fc;
+	int i, fc, lc;
 	Arg arg;
 
 	if (ev->y < 0 || ev->y > bh)
 		return;
 
-	if (((fc = getfirsttab()) > 0 && ev->x < TEXTW(before)) || ev->x < 0)
+	gettabrange(&fc, &lc);
+	if ((fc > 0 && ev->x < TEXTW(before)) || ev->x < 0)
 		return;
 
-	for (i = fc; i < nclients; i++) {
+	for (i = fc; i <= lc; i++) {
 		if (clients[i]->tabx > ev->x) {
 			switch (ev->button) {
 			case Button1:
@@ -327,7 +329,7 @@ void
 drawbar(void)
 {
 	XftColor *col;
-	int c, cc, fc, width;
+	int c, fc, lc;
 	char *name = NULL;
 
 	if (nclients == 0) {
@@ -341,16 +343,15 @@ drawbar(void)
 		return;
 	}
 
-	width = ww;
-	cc = ww / tabwidth;
-	if (nclients > cc)
-		cc = (ww - TEXTW(before) - TEXTW(after)) / tabwidth;
+	dc.x = 0;
+	dc.w = ww;
+	drawtext(NULL, dc.norm);
+	gettabrange(&fc, &lc);
 
-	if ((fc = getfirsttab()) + cc < nclients) {
+	if (lc + 1 < nclients) {
 		dc.w = TEXTW(after);
-		dc.x = width - dc.w;
+		dc.x = ww - dc.w;
 		drawtext(after, dc.sel);
-		width -= dc.w;
 	}
 	dc.x = 0;
 
@@ -358,15 +359,12 @@ drawbar(void)
 		dc.w = TEXTW(before);
 		drawtext(before, dc.sel);
 		dc.x += dc.w;
-		width -= dc.w;
 	}
 
-	cc = MIN(cc, nclients);
-	for (c = fc; c < fc + cc; c++) {
-		dc.w = width / cc;
+	for (c = fc; c <= lc; c++) {
+		dc.w = gettabwidth(c);
 		if (c == sel) {
 			col = dc.sel;
-			dc.w += width % cc;
 		} else {
 			col = clients[c]->urgent ? dc.urg : dc.norm;
 		}
@@ -618,21 +616,62 @@ getcolor(const char *colstr)
 }
 
 int
-getfirsttab(void)
+gettabwidth(int c)
 {
-	int cc, ret;
+	int width;
 
-	if (sel < 0)
-		return 0;
+	width = TEXTW(clients[c]->name);
+	return MAX(tabminwidth, MIN(tabmaxwidth, width));
+}
 
-	cc = ww / tabwidth;
-	if (nclients > cc)
-		cc = (ww - TEXTW(before) - TEXTW(after)) / tabwidth;
+void
+gettabrange(int *first, int *last)
+{
+	int added, left, right, total, turn = 0;
 
-	ret = sel - cc / 2 + (cc + 1) % 2;
-	return ret < 0 ? 0 :
-	       ret + cc > nclients ? MAX(0, nclients - cc) :
-	       ret;
+	if (sel < 0 || nclients <= 0) {
+		*first = 0;
+		*last = -1;
+		return;
+	}
+
+	left = right = sel;
+	total = gettabwidth(sel);
+	for (;;) {
+		added = 0;
+		if ((turn++ & 1) == 0) {
+			if (left > 0 && total + gettabwidth(left - 1) +
+			    (left - 1 > 0 ? TEXTW(before) : 0) +
+			    (right + 1 < nclients ? TEXTW(after) : 0) <= ww) {
+				total += gettabwidth(--left);
+				added = 1;
+			} else if (right + 1 < nclients &&
+			           total + gettabwidth(right + 1) +
+			           (left > 0 ? TEXTW(before) : 0) +
+			           (right + 2 < nclients ? TEXTW(after) : 0) <= ww) {
+				total += gettabwidth(++right);
+				added = 1;
+			}
+		} else {
+			if (right + 1 < nclients &&
+			    total + gettabwidth(right + 1) +
+			    (left > 0 ? TEXTW(before) : 0) +
+			    (right + 2 < nclients ? TEXTW(after) : 0) <= ww) {
+				total += gettabwidth(++right);
+				added = 1;
+			} else if (left > 0 && total + gettabwidth(left - 1) +
+			           (left - 1 > 0 ? TEXTW(before) : 0) +
+			           (right + 1 < nclients ? TEXTW(after) : 0) <= ww) {
+				total += gettabwidth(--left);
+				added = 1;
+			}
+		}
+		if (!added)
+			break;
+	}
+
+	*first = left;
+	*last = right;
 }
 
 Bool

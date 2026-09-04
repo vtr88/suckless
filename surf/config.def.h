@@ -24,7 +24,7 @@ static Parameter defconfig[ParameterLast] = {
 	[Certificate]         =       { { .i = 0 },     },
 	[CaretBrowsing]       =       { { .i = 0 },     },
 	[CookiePolicies]      =       { { .v = "@Aa" }, },
-	[DarkMode]            =       { { .i = 0 },     },
+	[DarkMode]            =       { { .i = 1 },     },
 	[DefaultCharset]      =       { { .v = "UTF-8" }, },
 	[DiskCache]           =       { { .i = 1 },     },
 	[DNSPrefetch]         =       { { .i = 0 },     },
@@ -69,6 +69,7 @@ static UriTitle urititles[] = {
 	{ "last.fm/",          "last.fm" },
 	{ "news.ycombinator.com/", "hacker news" },
 	{ "youtube.com/",      "youtube" },
+	{ "chatgpt.com/",      "gepeto" },
 };
 
 /* default window size: width, height */
@@ -161,8 +162,6 @@ static Key keys[] = {
 	{ MODKEY,                GDK_KEY_slash,  spawn,      SETPROP("_SURF_FIND", "_SURF_FIND", PROMPT_FIND) },
 
 	{ 0,                     GDK_KEY_Escape, stop,       { 0 } },
-	{ MODKEY,                GDK_KEY_c,      edit,       { .v = WEBKIT_EDITING_COMMAND_COPY } },
-	{ MODKEY,                GDK_KEY_v,      edit,       { .v = WEBKIT_EDITING_COMMAND_PASTE } },
 
 	{ MODKEY|GDK_SHIFT_MASK, GDK_KEY_r,      reload,     { .i = 1 } },
 	{ MODKEY,                GDK_KEY_r,      reload,     { .i = 0 } },
