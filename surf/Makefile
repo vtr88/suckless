@@ -46,7 +46,7 @@ distclean: clean
 dist: distclean
 	mkdir -p surf-$(VERSION)
 	cp -R LICENSE Makefile config.mk config.def.h README \
-	    surf-open.sh surf-session surf-download surf-bookmark surf-go \
+	    surf-open.sh surf-session surf-download surf-bookmark surf-reopen surf-go \
 	    bookmarks.example UPSTREAM arg.h TODO.md surf.png \
 	    surf.1 common.h styles scripts filters vendor $(SRC) $(WSRC) surf-$(VERSION)
 	tar -cf surf-$(VERSION).tar surf-$(VERSION)
@@ -61,11 +61,13 @@ install: all
 	cp -f surf-session $(DESTDIR)$(PREFIX)/bin/surf-session
 	cp -f surf-download $(DESTDIR)$(PREFIX)/bin/surf-download
 	cp -f surf-bookmark $(DESTDIR)$(PREFIX)/bin/surf-bookmark
+	cp -f surf-reopen $(DESTDIR)$(PREFIX)/bin/surf-reopen
 	cp -f surf-go $(DESTDIR)$(PREFIX)/bin/surf-go
 	chmod 755 $(DESTDIR)$(PREFIX)/bin/surf-open
 	chmod 755 $(DESTDIR)$(PREFIX)/bin/surf-session
 	chmod 755 $(DESTDIR)$(PREFIX)/bin/surf-download
 	chmod 755 $(DESTDIR)$(PREFIX)/bin/surf-bookmark
+	chmod 755 $(DESTDIR)$(PREFIX)/bin/surf-reopen
 	chmod 755 $(DESTDIR)$(PREFIX)/bin/surf-go
 	mkdir -p $(DESTDIR)$(DATAPREFIX)/styles
 	cp -f styles/cookies.css styles/lichess.css styles/lastfm.css \
@@ -99,6 +101,7 @@ uninstall:
 	rm -f $(DESTDIR)$(PREFIX)/bin/surf-session
 	rm -f $(DESTDIR)$(PREFIX)/bin/surf-download
 	rm -f $(DESTDIR)$(PREFIX)/bin/surf-bookmark
+	rm -f $(DESTDIR)$(PREFIX)/bin/surf-reopen
 	rm -f $(DESTDIR)$(PREFIX)/bin/surf-go
 	rm -f $(DESTDIR)$(DATAPREFIX)/styles/cookies.css
 	rm -f $(DESTDIR)$(DATAPREFIX)/styles/lichess.css

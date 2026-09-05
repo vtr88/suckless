@@ -33,6 +33,8 @@ state_dir=$HOME/.surf
 xidfile=$runtime_dir/surf-tabbed-$(id -u).xid
 lockdir=$runtime_dir/surf-session-$(id -u).lock
 statefile=$state_dir/session
+lastclosedfile=$state_dir/last-closed
+logfile=$state_dir/surf.log
 
 umask 077
 mkdir -p "$runtime_dir" "$state_dir"
@@ -92,7 +94,7 @@ if valid_window "$xid" && manager_running; then
 fi
 
 if [ "$foreground" -eq 0 ]; then
-	setsid "$0" --foreground "$@" </dev/null >/dev/null 2>&1 &
+	setsid "$0" --foreground "$@" </dev/null >>"$logfile" 2>&1 &
 	exit 0
 fi
 
@@ -128,9 +130,10 @@ fi
 
 printf '%s\n' "$$" >"$lockdir/pid"
 restorefile=$(mktemp "$runtime_dir/surf-restore.XXXXXX")
+clientsfile=$(mktemp "$runtime_dir/surf-clients.XXXXXX")
 
 cleanup() {
-	rm -f "$restorefile" "$lockdir/pid"
+	rm -f "$restorefile" "$clientsfile" "$lockdir/pid"
 	rmdir "$lockdir" 2>/dev/null || true
 }
 
@@ -169,13 +172,29 @@ fi
 
 snapshot() {
 	tmp=$(mktemp "$state_dir/session.XXXXXX")
+	current=$(mktemp "$runtime_dir/surf-clients.XXXXXX")
 	for wid in $(xprop -id "$xid" _TABBED_CLIENTS 2>/dev/null |
 		sed -n 's/^[^#]*# //p' | tr ',' '\n' |
 		sed 's/^[[:space:]]*//; s/[[:space:]]*$//')
 	do
-		xprop -id "$wid" _SURF_URI 2>/dev/null |
-			sed -n 's/^_SURF_URI(UTF8_STRING) = "\(.*\)"$/\1/p'
+		uri=$(xprop -id "$wid" _SURF_URI 2>/dev/null |
+			sed -n 's/^_SURF_URI(UTF8_STRING) = "\(.*\)"$/\1/p')
+		[ -n "$uri" ] || continue
+		printf '%s\n' "$uri"
+		printf '%s %s\n' "$wid" "$uri" >>"$current"
 	done >"$tmp"
+
+	if [ -s "$clientsfile" ]; then
+		while read -r oldwid olduri; do
+			grep -q "^$oldwid " "$current" 2>/dev/null && continue
+			case $olduri in
+				''|about:blank) continue ;;
+			esac
+			printf '%s\n' "$olduri" >"$lastclosedfile"
+			chmod 600 "$lastclosedfile"
+		done <"$clientsfile"
+	fi
+	mv "$current" "$clientsfile"
 
 	if [ -s "$tmp" ]; then
 		chmod 600 "$tmp"

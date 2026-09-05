@@ -1,0 +1,28 @@
+#!/bin/sh
+
+set -eu
+
+[ "$#" -eq 1 ] || exit 2
+xid=$1
+case $xid in
+	''|*[!0-9]*) exit 2 ;;
+esac
+
+lastclosed=${SURF_LAST_CLOSED_FILE:-$HOME/.surf/last-closed}
+[ -r "$lastclosed" ] || exit 0
+IFS= read -r uri <"$lastclosed" || true
+case $uri in
+	http://*|https://*|file://*|webkit://*|about:*) ;;
+	*) exit 0 ;;
+esac
+
+scriptdir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+if [ -n "${SURF_BIN:-}" ]; then
+	surf_bin=$SURF_BIN
+elif [ -x "$scriptdir/surf" ]; then
+	surf_bin=$scriptdir/surf
+else
+	surf_bin=surf
+fi
+
+"$surf_bin" -e "$xid" -- "$uri" >/dev/null 2>&1 &

@@ -38,11 +38,16 @@ static Bool npisrelative  = True;
 	.v = (char *[]){ "surf-bookmark", winid, n, NULL } \
 }
 
+#define REOPEN { \
+	.v = (char *[]){ "surf-reopen", winid, NULL } \
+}
+
 #define MODKEY ControlMask
 static const Key keys[] = {
 	/* modifier             key        function     argument */
 	{ MODKEY,               XK_t,      focusonce,   { 0 } },
 	{ MODKEY,               XK_t,      spawn,       { 0 } },
+	{ MODKEY|ShiftMask,     XK_t,      spawn,       REOPEN },
 
 	{ MODKEY|ShiftMask,     XK_l,      rotate,      { .i = +1 } },
 	{ MODKEY|ShiftMask,     XK_h,      rotate,      { .i = -1 } },

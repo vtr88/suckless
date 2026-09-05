@@ -74,6 +74,7 @@ static UriTitle urititles[] = {
 
 /* default window size: width, height */
 static int winsize[] = { 800, 600 };
+static char *blankbgcolor = "#3a3328";
 
 static WebKitFindOptions findopts = WEBKIT_FIND_OPTIONS_CASE_INSENSITIVE |
                                     WEBKIT_FIND_OPTIONS_WRAP_AROUND;

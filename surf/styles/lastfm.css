@@ -143,6 +143,18 @@
 		color: #d5c4a1 !important;
 	}
 
+	/* The progress module uses hard-coded dark text, including SVG labels. */
+	.your-progress .description {
+		color: #a89984 !important;
+	}
+
+	.your-progress .description > span,
+	.your-progress-label-position,
+	.your-progress text:has(> .your-progress-label-position) {
+		color: #d5c4a1 !important;
+		fill: #d5c4a1 !important;
+	}
+
 	.highcharts-background {
 		fill: #342e25 !important;
 		stroke: #342e25 !important;
@@ -199,6 +211,62 @@
 		background: #453c30 !important;
 		border-color: #53483a !important;
 		color: #d5c4a1 !important;
+	}
+
+	/* The library date picker is a separate light popover. */
+	.date-range-picker-content {
+		background: #342e25 !important;
+		box-shadow: 0 1px 10px rgb(0 0 0 / 45%),
+			0 0 0 1px #53483a !important;
+		color: #d5c4a1 !important;
+	}
+
+	.date-range-picker-content::before {
+		background: none !important;
+		border-bottom: 9px solid #342e25 !important;
+		border-left: 9px solid transparent !important;
+		border-right: 9px solid transparent !important;
+		height: 0 !important;
+		top: -9px !important;
+		width: 0 !important;
+	}
+
+	.date-range-picker-presets a {
+		color: #d5c4a1 !important;
+	}
+
+	.date-range-picker-presets a::after,
+	.date-range-picker-form {
+		border-color: #53483a !important;
+	}
+
+	body:not([data-whatinput="touch"])
+		.date-range-picker-presets a:focus,
+	body:not([data-whatinput="touch"])
+		.date-range-picker-presets a:hover,
+	.date-range-picker-presets a:active {
+		background: #453c30 !important;
+		color: #ebdbb2 !important;
+	}
+
+	.date-range-picker-preset--selected a,
+	.date-range-picker-preset--selected a:focus,
+	.date-range-picker-preset--selected a:hover {
+		background: #453c30 !important;
+		color: #ff9f3f !important;
+	}
+
+	.date-range-picker-form .control-label {
+		color: #a89984 !important;
+	}
+
+	.date-range-picker-form .btn-cancel {
+		color: #a89984 !important;
+	}
+
+	.date-range-picker-form .btn-cancel:focus,
+	.date-range-picker-form .btn-cancel:hover {
+		color: #ebdbb2 !important;
 	}
 
 	/* Listening Reports uses white promo cards outside the site palette. */

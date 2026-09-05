@@ -129,6 +129,11 @@ No primeiro uso, o navegador abre uma unica pagina vazia. Depois disso, o
 `~/.surf/session`, restaura a ultima sessao e ignora arquivos XID
 obsoletos. Uma segunda chamada apenas reutiliza e foca a janela existente.
 Tambem e possivel fornecer uma lista explicita de URLs ao `surf-session`.
+O ultimo endereco fechado fica em `~/.surf/last-closed`; `Ctrl+Shift+T`
+reabre esse endereco em uma nova aba.
+Paginas vazias abertas com `Ctrl+T` usam o fundo Gruvwood `#3a3328`.
+Falhas do processo WebKit sao registradas em `~/.surf/surf.log`. O Surf
+mantem a aba aberta e tenta recupera-la no maximo duas vezes por minuto.
 
 Cookies, cache e dados locais ficam persistentes em `~/.surf`, portanto os
 logins podem ser mantidos entre execucoes. O primeiro login e a compatibilidade

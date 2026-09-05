@@ -111,6 +111,8 @@ typedef struct Client {
 	Window xid;
 	guint64 pageid;
 	int progress, fullscreen, https, insecure, errorpage;
+	gint64 webprocessrestartat;
+	unsigned int webprocessrestarts;
 	const char *title, *overtitle, *targeturi;
 	const char *needle;
 	struct Client *next;
@@ -177,6 +179,7 @@ static const char *getcurrentuserhomedir(void);
 static Client *newclient(Client *c);
 static void loaduri(Client *c, const Arg *a);
 static const char *geturi(Client *c);
+static void setbackground(Client *c, const char *uri);
 static void setatom(Client *c, int a, const char *v);
 static const char *getatom(Client *c, int a);
 static void updatetitle(Client *c);
@@ -712,6 +715,23 @@ geturi(Client *c)
 	if (!(uri = webkit_web_view_get_uri(c->view)))
 		uri = "about:blank";
 	return uri;
+}
+
+void
+setbackground(Client *c, const char *uri)
+{
+	GdkRGBA color = { 1.0, 1.0, 1.0, 1.0 };
+
+	if (curconfig[HideBackground].val.i) {
+		color = (GdkRGBA){ 0 };
+	} else if (!strcmp(uri, "about:blank") &&
+	           !gdk_rgba_parse(&color, blankbgcolor)) {
+		fprintf(stderr, "Could not parse blank background color: %s\n",
+		        blankbgcolor);
+		color = (GdkRGBA){ 1.0, 1.0, 1.0, 1.0 };
+	}
+
+	webkit_web_view_set_background_color(c->view, &color);
 }
 
 void
@@ -1590,7 +1610,6 @@ winevent(GtkWidget *w, GdkEvent *e, Client *c)
 void
 showview(WebKitWebView *v, Client *c)
 {
-	GdkRGBA bgcolor = { 0 };
 	GdkWindow *gwin;
 
 	c->finder = webkit_web_view_get_find_controller(c->view);
@@ -1600,6 +1619,7 @@ showview(WebKitWebView *v, Client *c)
 	c->win = createwindow(c);
 
 	gtk_container_add(GTK_CONTAINER(c->win), GTK_WIDGET(c->view));
+	setbackground(c, "about:blank");
 	gtk_widget_show_all(c->win);
 	gtk_widget_grab_focus(GTK_WIDGET(c->view));
 
@@ -1611,9 +1631,6 @@ showview(WebKitWebView *v, Client *c)
 		puts(winid);
 		fflush(stdout);
 	}
-
-	if (curconfig[HideBackground].val.i)
-		webkit_web_view_set_background_color(c->view, &bgcolor);
 
 	if (!curconfig[KioskMode].val.i) {
 		gdk_window_set_events(gwin, GDK_ALL_EVENTS_MASK);
@@ -1727,6 +1744,7 @@ loadchanged(WebKitWebView *v, WebKitLoadEvent e, Client *c)
 		c->title = uri;
 		c->https = c->insecure = 0;
 		seturiparameters(c, uri, loadtransient);
+		setbackground(c, uri);
 		if (c->errorpage)
 			c->errorpage = 0;
 		else
@@ -1736,11 +1754,13 @@ loadchanged(WebKitWebView *v, WebKitLoadEvent e, Client *c)
 		setatom(c, AtomUri, uri);
 		c->title = uri;
 		seturiparameters(c, uri, loadtransient);
+		setbackground(c, uri);
 		break;
 	case WEBKIT_LOAD_COMMITTED:
 		setatom(c, AtomUri, uri);
 		c->title = uri;
 		seturiparameters(c, uri, loadcommitted);
+		setbackground(c, uri);
 		loadzoom(c);
 		c->https = webkit_web_view_get_tls_info(c->view, &c->cert,
 		                                        &c->tlserr);
@@ -1999,14 +2019,55 @@ void
 webprocessterminated(WebKitWebView *v, WebKitWebProcessTerminationReason r,
                      Client *c)
 {
-	fprintf(stderr, "web process terminated: %s\n",
-	        r == WEBKIT_WEB_PROCESS_CRASHED ? "crashed" : "no memory");
-	closeview(v, c);
+	const char *reason;
+	char *uri;
+	gint64 now;
+
+	switch (r) {
+	case WEBKIT_WEB_PROCESS_CRASHED:
+		reason = "crashed";
+		break;
+	case WEBKIT_WEB_PROCESS_EXCEEDED_MEMORY_LIMIT:
+		reason = "memory limit exceeded";
+		break;
+	case WEBKIT_WEB_PROCESS_TERMINATED_BY_API:
+		reason = "terminated by API";
+		break;
+	default:
+		reason = "unknown reason";
+		break;
+	}
+
+	uri = g_strdup(geturi(c));
+	now = g_get_monotonic_time();
+	if (!c->webprocessrestartat ||
+	    now - c->webprocessrestartat > 60 * G_USEC_PER_SEC) {
+		c->webprocessrestartat = now;
+		c->webprocessrestarts = 0;
+	}
+
+	fprintf(stderr, "surf: web process %s for %s\n", reason, uri);
+	fflush(stderr);
+
+	/* Keep the tab and recover from an occasional WebKit failure, but stop
+	 * after two attempts in one minute so a broken page cannot reload-loop. */
+	if (r != WEBKIT_WEB_PROCESS_TERMINATED_BY_API &&
+	    c->webprocessrestarts < 2) {
+		c->webprocessrestarts++;
+		webkit_web_view_load_uri(v, uri);
+	} else {
+		gtk_window_set_title(GTK_WINDOW(c->win),
+		                     "web process stopped - Ctrl+R to retry");
+	}
+
+	g_free(uri);
 }
 
 void
 closeview(WebKitWebView *v, Client *c)
 {
+	fprintf(stderr, "surf: page requested tab close for %s\n", geturi(c));
+	fflush(stderr);
 	gtk_widget_destroy(c->win);
 }
 
