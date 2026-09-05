@@ -39,6 +39,10 @@ logfile=$state_dir/surf.log
 umask 077
 mkdir -p "$runtime_dir" "$state_dir"
 
+# WebKitGTK can exhaust Debian's 1024-descriptor soft limit and crash a tab.
+# Raise it only for this Surf session and its descendants; keep the hard limit.
+ulimit -Sn 8192 2>/dev/null || true
+
 read_xid() {
 	[ -r "$xidfile" ] || return 1
 	sed -n '1p' "$xidfile"
@@ -67,7 +71,7 @@ open_tabs() {
 	shift
 	for uri do
 		before=$(tab_count "$xid")
-		"$surf_bin" -e "$xid" "$uri" >/dev/null 2>&1 &
+		"$surf_bin" -e "$xid" "$uri" </dev/null >>"$logfile" 2>&1 &
 		i=0
 		while [ "$i" -lt 50 ]; do
 			after=$(tab_count "$xid")
